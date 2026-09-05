@@ -14,9 +14,13 @@
             
             <div class="flex flex-wrap items-center gap-2.5">
                 <!-- Sync Trigger Modal Button -->
-                <button type="button" @click="syncModalOpen = true" class="px-4 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs transition-all shadow-xs flex items-center gap-1.5 min-h-[40px] cursor-pointer">
-                    <svg class="w-4 h-4 text-emerald-400" :class="{ 'animate-spin': syncing }" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
-                    <span>Sinkronkan Data Lokasi (API)</span>
+                <button type="button" 
+                        @click="syncModalOpen = true" 
+                        :disabled="bulkSyncing"
+                        :class="bulkSyncing ? 'bg-slate-400 cursor-not-allowed opacity-80' : 'bg-slate-900 hover:bg-slate-800 cursor-pointer'"
+                        class="px-4 py-2.5 rounded-xl text-white font-bold text-xs transition-all shadow-xs flex items-center gap-1.5 min-h-[40px]">
+                    <svg class="w-4 h-4 text-emerald-400" :class="{ 'animate-spin': syncing || bulkSyncing }" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+                    <span x-text="bulkSyncing ? '⚡ Sinkron Massal Sedang Berjalan...' : 'Sinkronkan Data Lokasi (API)'"></span>
                 </button>
 
                 <!-- Add Location Button -->
@@ -27,12 +31,73 @@
             </div>
         </div>
 
-        <!-- Live Status Box (If Running / Recent Log) -->
-        <div x-show="latestLog" x-transition class="p-4 rounded-2xl bg-white border border-slate-200/80 shadow-xs space-y-3">
+        <!-- LIVE BULK SYNC PROGRESS & TERMINAL FEED BOX -->
+        <div x-show="bulkSyncing || (bulkState && bulkState.is_running) || bulkCompleted" x-transition class="p-5 rounded-3xl bg-slate-900 text-white shadow-xl space-y-4 border border-slate-800 relative overflow-hidden">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800 pb-3">
+                <div class="flex items-center gap-2.5">
+                    <span class="relative flex h-3 w-3">
+                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" x-show="bulkSyncing"></span>
+                        <span class="relative inline-flex rounded-full h-3 w-3" :class="bulkCompleted ? 'bg-emerald-400' : 'bg-amber-500'"></span>
+                    </span>
+                    <div>
+                        <h3 class="font-bold text-sm sm:text-base text-white flex items-center gap-2">
+                            <span x-text="bulkCompleted ? '🎉 Sinkronisasi Massal Seluruh Kota Selesai' : 'Sinkronisasi Massal Seluruh Kota Sedang Berjalan...'"></span>
+                            <span class="px-2 py-0.5 rounded text-[10px] font-mono bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 uppercase tracking-wider" x-text="bulkProgressPercent + '%'"></span>
+                        </h3>
+                        <p class="text-xs text-slate-400" x-text="bulkCompleted ? 'Seluruh kota aktif telah berhasil dipindai dan diperbarui!' : 'Memproses Kota: ' + (bulkCurrentCityName || 'Menginisialisasi...') + ' (' + (bulkCurrentIndex || 0) + '/' + (bulkTotalCities || 0) + ')'"></p>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-2">
+                    <button type="button" @click="resetBulkSyncLock()" class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-slate-300 border border-slate-700 transition-colors">
+                        Reset Status Lock
+                    </button>
+                    <button type="button" x-show="bulkCompleted" @click="window.location.reload()" class="px-3.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-xs font-bold text-white shadow-xs transition-colors">
+                        Muat Ulang Halaman
+                    </button>
+                </div>
+            </div>
+
+            <!-- Progress Bar Container -->
+            <div class="space-y-1.5">
+                <div class="w-full bg-slate-800 rounded-full h-3 overflow-hidden p-0.5 border border-slate-700/80">
+                    <div class="bg-gradient-to-r from-emerald-500 to-teal-400 h-full rounded-full transition-all duration-300 shadow-xs" :style="'width: ' + bulkProgressPercent + '%'"></div>
+                </div>
+                <div class="flex flex-wrap justify-between text-[11px] text-slate-400 font-mono gap-2">
+                    <span>Kemajuan: <strong class="text-emerald-400 font-bold" x-text="(bulkCurrentIndex || 0) + ' / ' + (bulkTotalCities || 0) + ' Kota'"></strong></span>
+                    <span>Total Ditemukan: <strong class="text-emerald-400 font-bold" x-text="bulkTotals?.discovered ?? 0"></strong> | Baru: <strong class="text-emerald-300 font-bold" x-text="'+' + (bulkTotals?.created ?? 0)"></strong> | Diperbarui: <strong class="text-blue-300 font-bold" x-text="bulkTotals?.updated ?? 0"></strong></span>
+                </div>
+            </div>
+
+            <!-- Live Terminal Output Console Log -->
+            <div class="space-y-1.5">
+                <div class="text-[11px] font-bold uppercase tracking-wider text-slate-400 flex items-center justify-between">
+                    <span>🖥️ Log Aktivitas Sinkronisasi Real-Time:</span>
+                    <span class="text-[10px] text-slate-500 font-mono">Live Terminal Stream</span>
+                </div>
+                <div id="bulkSyncTerminal" class="h-44 overflow-y-auto rounded-2xl bg-slate-950 p-3 font-mono text-xs text-slate-300 space-y-1.5 border border-slate-800/80 shadow-inner">
+                    <template x-for="(log, idx) in bulkLogs" :key="idx">
+                        <div class="flex items-start gap-2 py-1 border-b border-slate-900/80 leading-relaxed">
+                            <span class="text-slate-500 text-[10px] shrink-0 font-mono" x-text="'[' + (log.time || '--:--') + ']'"></span>
+                            <span class="px-1.5 py-0.5 rounded text-[10px] font-bold shrink-0 font-mono" :class="{ 'bg-emerald-950 text-emerald-400 border border-emerald-800/60': log.status === 'success', 'bg-rose-950 text-rose-400 border border-rose-800/60': log.status === 'failed' }">
+                                <span x-text="'[' + log.step + '/' + (bulkTotalCities || 0) + '] ' + log.city_name"></span>
+                            </span>
+                            <span class="text-slate-300 flex-grow" x-text="'Ditemukan: ' + log.discovered + ' | Baru: +' + log.created + ' | Diperbarui: ' + log.updated"></span>
+                        </div>
+                    </template>
+                    <div x-show="bulkLogs.length === 0" class="text-slate-500 italic py-2">
+                        Memulai sinkronisasi massal seluruh kota...
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Live Status Box (Single City Log) -->
+        <div x-show="latestLog && !bulkSyncing" x-transition class="p-4 rounded-2xl bg-white border border-slate-200/80 shadow-xs space-y-3">
             <div class="flex items-center justify-between">
                 <div class="font-bold text-slate-900 text-sm flex items-center gap-2">
                     <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                    <span>Status Log Sinkronisasi Terakhir</span>
+                    <span>Status Log Sinkronisasi Terakhir (Per-Kota)</span>
                     <span class="px-2 py-0.5 rounded text-[10px] uppercase font-mono font-bold" :class="{ 'bg-amber-100 text-amber-800': latestLog?.status === 'running', 'bg-emerald-100 text-emerald-800': latestLog?.status === 'success', 'bg-slate-200 text-slate-700': latestLog?.status === 'partial', 'bg-rose-100 text-rose-800': latestLog?.status === 'failed' }" x-text="latestLog?.status"></span>
                 </div>
                 <span class="text-[11px] text-slate-500 font-mono" x-text="'Diperbarui: ' + lastUpdatedTime"></span>
@@ -97,76 +162,90 @@
                 <button type="submit" class="px-5 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs transition-colors shrink-0">
                     Cari Lokasi
                 </button>
-
-                @if(!empty($search) || !empty($selectedCityId))
-                    <a href="{{ route('admin.locations.index') }}" class="px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs transition-colors flex items-center justify-center shrink-0">
-                        Reset
-                    </a>
-                @endif
             </form>
         </div>
 
-        <!-- Locations List Table -->
-        <div class="bg-white border border-slate-200/80 rounded-2xl overflow-hidden shadow-xs">
-            <div class="p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200/80">
-                <h3 class="font-bold text-slate-900 text-base">Daftar Lokasi Terdaftar ({{ $locations->total() }} Tempat)</h3>
-                <div class="text-xs text-slate-500 font-medium">
-                    Data &copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" class="underline font-semibold text-emerald-700">OpenStreetMap contributors</a>
-                </div>
-            </div>
-
-            <!-- Desktop View Table -->
-            <div class="hidden md:block overflow-x-auto">
-                <table class="w-full text-left border-collapse text-xs sm:text-sm min-w-[700px]">
-                    <thead>
-                        <tr class="bg-slate-50 border-b border-slate-200/80 text-slate-500 font-bold uppercase text-[11px] tracking-wider">
-                            <th class="py-3.5 px-4">Nama Lokasi & ID</th>
-                            <th class="py-3.5 px-4">Kategori</th>
-                            <th class="py-3.5 px-4">Kota</th>
-                            <th class="py-3.5 px-4">Skor Hijau</th>
-                            <th class="py-3.5 px-4">Sumber</th>
-                            <th class="py-3.5 px-4">Verifikasi</th>
-                            <th class="py-3.5 px-4 text-right">Aksi</th>
+        <!-- Locations Table -->
+        <div class="bg-white border border-slate-200/80 rounded-3xl overflow-hidden shadow-xs">
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-xs sm:text-sm">
+                    <thead class="bg-slate-50 border-b border-slate-200/80 text-slate-500 font-bold uppercase tracking-wider text-[10px] sm:text-xs">
+                        <tr>
+                            <th class="py-3.5 px-4 sm:px-6">Lokasi & Kategori</th>
+                            <th class="py-3.5 px-4 sm:px-6">Kota / Wilayah</th>
+                            <th class="py-3.5 px-4 sm:px-6 text-center">Skor Hijau</th>
+                            <th class="py-3.5 px-4 sm:px-6 text-center">Jalan Kaki</th>
+                            <th class="py-3.5 px-4 sm:px-6 text-center">Sepeda</th>
+                            <th class="py-3.5 px-4 sm:px-6">Sumber Data</th>
+                            <th class="py-3.5 px-4 sm:px-6 text-right">Aksi</th>
                         </tr>
                     </thead>
-                    <tbody class="divide-y divide-slate-100 text-slate-800">
+                    <tbody class="divide-y divide-slate-100 text-slate-700">
                         @forelse($locations as $loc)
                             <tr class="hover:bg-slate-50/80 transition-colors">
-                                <td class="py-4 px-4">
-                                    <div class="font-bold text-slate-900 text-sm">{{ $loc->name }}</div>
-                                    <div class="text-[11px] text-slate-400 font-mono">{{ $loc->external_id ?? $loc->source_id ?? 'ID: ' . $loc->id }}</div>
-                                    @if($loc->address)
-                                        <div class="text-xs text-slate-500 truncate max-w-xs mt-0.5">{{ $loc->address }}</div>
-                                    @endif
+                                <td class="py-3.5 px-4 sm:px-6">
+                                    <div class="font-bold text-slate-900 text-sm sm:text-base leading-tight">
+                                        {{ $loc->name }}
+                                    </div>
+                                    <div class="flex items-center gap-2 mt-1">
+                                        <span class="px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-800 font-semibold text-[10px] uppercase">
+                                            {{ $loc->category }}
+                                        </span>
+                                        @if($loc->address)
+                                            <span class="text-xs text-slate-500 truncate max-w-[200px] sm:max-w-[280px]" title="{{ $loc->address }}">&bull; {{ $loc->address }}</span>
+                                        @endif
+                                    </div>
                                 </td>
-                                <td class="py-4 px-4 uppercase"><span class="px-2.5 py-1 rounded-md bg-slate-100 text-slate-700 text-[10px] font-mono font-bold">{{ $loc->category }}</span></td>
-                                <td class="py-4 px-4 font-semibold text-slate-700">{{ $loc->city->name ?? 'Kota' }}</td>
-                                <td class="py-4 px-4 text-emerald-700 font-bold font-mono">{{ $loc->green_score }}%</td>
-                                <td class="py-4 px-4 text-slate-600 font-medium uppercase text-xs">
-                                    <span class="px-2.5 py-1 rounded-md bg-emerald-50 text-emerald-800 border border-emerald-200/80 text-[10px] font-mono font-bold">{{ $loc->source }}</span>
+                                <td class="py-3.5 px-4 sm:px-6 font-medium text-slate-800 whitespace-nowrap">
+                                    <div class="font-semibold text-slate-900">{{ $loc->city->name ?? '-' }}</div>
+                                    <div class="text-xs text-slate-500">{{ $loc->city->province ?? '' }}</div>
                                 </td>
-                                <td class="py-4 px-4">
-                                    @if($loc->is_verified)
-                                        <span class="px-2.5 py-1 rounded-full bg-blue-50 text-blue-800 border border-blue-200/80 font-bold text-[11px]">Verified</span>
+                                <td class="py-3.5 px-4 sm:px-6 text-center whitespace-nowrap">
+                                    <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold {{ $loc->green_score >= 80 ? 'bg-emerald-100 text-emerald-800' : ($loc->green_score >= 60 ? 'bg-amber-100 text-amber-800' : 'bg-slate-100 text-slate-700') }}">
+                                        {{ $loc->green_score }}/100
+                                    </span>
+                                </td>
+                                <td class="py-3.5 px-4 sm:px-6 text-center whitespace-nowrap">
+                                    <span class="font-mono font-semibold text-slate-700">{{ $loc->walking_score }}%</span>
+                                </td>
+                                <td class="py-3.5 px-4 sm:px-6 text-center whitespace-nowrap">
+                                    @if($loc->bike_friendly)
+                                        <span class="px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 font-bold text-[10px]">Ya</span>
                                     @else
-                                        <span class="px-2.5 py-1 rounded-full bg-slate-100 text-slate-600 font-medium text-[11px]">OSM Auto</span>
+                                        <span class="px-2 py-0.5 rounded bg-slate-100 text-slate-500 font-medium text-[10px]">Tidak</span>
                                     @endif
                                 </td>
-                                <td class="py-4 px-4 text-right">
-                                    <div class="flex items-center justify-end gap-2">
-                                        <a href="{{ route('admin.locations.edit', $loc) }}" class="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-xs transition-colors">Edit</a>
-                                        <form method="POST" action="{{ route('admin.locations.destroy', $loc) }}" class="inline" onsubmit="return confirm('Hapus lokasi ini?')">
+                                <td class="py-3.5 px-4 sm:px-6 whitespace-nowrap">
+                                    <span class="px-2 py-0.5 rounded bg-slate-100 text-slate-600 font-mono text-[10px] font-semibold uppercase">
+                                        {{ $loc->source ?? 'manual' }}
+                                    </span>
+                                </td>
+                                <td class="py-3.5 px-4 sm:px-6 text-right whitespace-nowrap">
+                                    <div class="flex items-center justify-end gap-1.5">
+                                        <a href="{{ route('locations.show', $loc->slug) }}" target="_blank" class="p-1.5 rounded-lg text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 transition-colors" title="Lihat di Web">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                                        </a>
+                                        <a href="{{ route('admin.locations.edit', $loc->id) }}" class="p-1.5 rounded-lg text-slate-400 hover:text-blue-600 hover:bg-blue-50 transition-colors" title="Edit Lokasi">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                                        </a>
+                                        <form method="POST" action="{{ route('admin.locations.destroy', $loc->id) }}" onsubmit="return confirm('Apakah Anda yakin ingin menghapus lokasi ini?');" class="inline">
                                             @csrf
                                             @method('DELETE')
-                                            <button type="submit" class="p-2 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 font-semibold text-xs transition-colors cursor-pointer">Hapus</button>
+                                            <button type="submit" class="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors" title="Hapus Lokasi">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                                            </button>
                                         </form>
                                     </div>
                                 </td>
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="7" class="text-center py-8 text-slate-500 text-xs">
-                                    Belum ada lokasi terdaftar. Silakan klik tombol "Sinkronkan Data Lokasi (API)" di atas.
+                                <td colspan="7" class="py-12 text-center text-slate-400">
+                                    <div class="space-y-2">
+                                        <svg class="w-8 h-8 mx-auto text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path></svg>
+                                        <p class="font-medium text-sm text-slate-600">Belum ada lokasi publik yang tersimpan.</p>
+                                        <p class="text-xs text-slate-400">Gunakan tombol "Sinkronkan Data Lokasi" di atas untuk mencari dari OpenStreetMap.</p>
+                                    </div>
                                 </td>
                             </tr>
                         @endforelse
@@ -174,84 +253,48 @@
                 </table>
             </div>
 
-            <!-- Mobile View Responsive Cards -->
-            <div class="md:hidden divide-y divide-slate-100">
-                @forelse($locations as $loc)
-                    <div class="p-4 space-y-3">
-                        <div class="flex items-start justify-between gap-2">
-                            <div>
-                                <div class="font-bold text-slate-900 text-sm leading-snug">{{ $loc->name }}</div>
-                                <div class="text-[11px] text-slate-400 font-mono mt-0.5">{{ $loc->external_id ?? $loc->source_id ?? 'ID: ' . $loc->id }}</div>
-                                @if($loc->address)
-                                    <div class="text-xs text-slate-500 mt-1 leading-relaxed">{{ $loc->address }}</div>
-                                @endif
-                            </div>
-                            <span class="px-2 py-0.5 rounded bg-slate-200 text-slate-800 text-[10px] font-mono font-bold uppercase shrink-0">
-                                {{ $loc->category }}
-                            </span>
-                        </div>
-
-                        <div class="flex flex-wrap items-center gap-1.5 text-xs pt-2 border-t border-slate-100">
-                            <span class="px-2.5 py-1 rounded-md bg-emerald-100 text-emerald-800 font-bold font-mono text-[11px]">
-                                Skor: {{ $loc->green_score }}%
-                            </span>
-                            <span class="px-2.5 py-1 rounded-md bg-slate-100 text-slate-700 font-medium text-[11px]">
-                                {{ $loc->city->name ?? 'Kota' }}
-                            </span>
-                        </div>
-
-                        <div class="flex items-center justify-end gap-2 pt-2 border-t border-slate-100">
-                            <a href="{{ route('admin.locations.edit', $loc) }}" class="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-semibold text-xs">Edit</a>
-                            <form method="POST" action="{{ route('admin.locations.destroy', $loc) }}" class="inline" onsubmit="return confirm('Hapus lokasi ini?')">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="px-3 py-1.5 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-800 font-semibold text-xs cursor-pointer">Hapus</button>
-                            </form>
-                        </div>
-                    </div>
-                @empty
-                    <div class="text-center py-8 text-slate-500 p-4 text-xs">
-                        Belum ada lokasi terdaftar.
-                    </div>
-                @endforelse
-            </div>
-
-            <div class="p-4 border-t border-slate-200/80 bg-slate-50/50">
-                {{ $locations->appends(['city_id' => $selectedCityId, 'search' => $search])->links() }}
-            </div>
+            @if($locations->hasPages())
+                <div class="p-4 bg-slate-50 border-t border-slate-200/80">
+                    {{ $locations->appends(request()->query())->links() }}
+                </div>
+            @endif
         </div>
 
-        <!-- Sync Location Interactive Modal -->
+        <!-- Sync Trigger Modal -->
         <div x-show="syncModalOpen" 
-             x-transition:enter="transition ease-out duration-200" 
-             x-transition:enter-start="opacity-0" 
-             x-transition:enter-end="opacity-100" 
-             x-transition:leave="transition ease-in duration-150" 
-             x-transition:leave-start="opacity-100" 
-             x-transition:leave-end="opacity-0" 
-             class="fixed inset-0 bg-slate-900/70 backdrop-blur-xs z-50 flex items-center justify-center p-4" 
-             @keydown.escape.window="syncModalOpen = false" 
+             x-transition:enter="transition ease-out duration-200"
+             x-transition:enter-start="opacity-0"
+             x-transition:enter-end="opacity-100"
+             x-transition:leave="transition ease-in duration-150"
+             x-transition:leave-start="opacity-100"
+             x-transition:leave-end="opacity-0"
+             class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 flex items-center justify-center p-4" 
              x-cloak>
             
-            <div @click.away="syncModalOpen = false" 
-                 class="bg-white rounded-3xl shadow-2xl border border-slate-200/90 max-w-lg w-full overflow-hidden p-6 space-y-5">
+            <div @click.outside="if(!bulkSyncing) syncModalOpen = false" 
+                 class="bg-white rounded-3xl shadow-2xl max-w-lg w-full p-6 sm:p-8 space-y-6 border border-slate-200 relative overflow-hidden">
                 
-                <div class="flex items-center justify-between pb-3 border-b border-slate-100">
-                    <div class="flex items-center gap-2">
-                        <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                        <h3 class="font-bold text-slate-900 text-base sm:text-lg">Sinkronisasi Data Lokasi (API OSM)</h3>
+                <div class="flex items-center justify-between border-b border-slate-100 pb-4">
+                    <div>
+                        <h3 class="font-bold text-slate-900 text-lg sm:text-xl">Sinkronisasi Data Lokasi (API)</h3>
+                        <p class="text-xs text-slate-500 mt-0.5">Integrasi OpenStreetMap Overpass Discovery Engine</p>
                     </div>
-                    <button type="button" @click="syncModalOpen = false" class="p-1.5 rounded-xl bg-slate-100 text-slate-500 hover:text-slate-900 transition-colors">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                    <button type="button" @click="syncModalOpen = false" class="p-1 rounded-xl text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
                     </button>
                 </div>
 
-                <!-- Best Practice Recommendation Box -->
                 <div class="p-4 rounded-2xl bg-emerald-50 border border-emerald-200/80 text-xs text-emerald-900 leading-relaxed space-y-1">
                     <div class="font-bold text-emerald-950 flex items-center gap-1">
                         <span>💡 Praktik Terbaik (Best Practice):</span>
                     </div>
-                    <p>Pilih kota spesifik untuk sinkronisasi cepat (10-15 km standar), atau pilih <strong>"Sinkronkan Seluruh Kota (Bulk)"</strong> untuk memperbarui semua kota aktif sekaligus secara otomatis di latar belakang server.</p>
+                    <p>Pilih kota spesifik untuk sinkronisasi cepat (10 km standar), atau pilih <strong>"⚡ Seluruh Kota (Bulk All)"</strong> untuk memproses seluruh kota aktif secara berurutan dengan log aktivitas real-time tanpa pembekuan layar.</p>
+                </div>
+
+                <!-- Warning when bulk sync is active -->
+                <div x-show="bulkSyncing" class="p-3.5 rounded-2xl bg-amber-50 border border-amber-200 text-xs text-amber-900 font-semibold space-y-1">
+                    <div>⚠️ Sinkronisasi Massal Sedang Berjalan:</div>
+                    <div class="text-[11px] font-normal text-amber-800">Proses sinkronisasi massal sedang berlangsung di latar belakang. Pengaturan tidak dapat diubah hingga proses selesai.</div>
                 </div>
 
                 <!-- Tab Choices: Per-Kota vs Bulk All -->
@@ -292,7 +335,7 @@
                                 </select>
                             </div>
 
-                            <button type="submit" class="w-full py-3.5 px-4 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs sm:text-sm transition-all shadow-md shadow-emerald-600/20 flex items-center justify-center gap-2 cursor-pointer">
+                            <button type="submit" :disabled="bulkSyncing" class="w-full py-3.5 px-4 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs sm:text-sm transition-all shadow-md shadow-emerald-600/20 flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed">
                                 <span>Mulai Sinkronisasi Kota</span>
                             </button>
                         </div>
@@ -301,29 +344,31 @@
 
                 <!-- Mode 2: Bulk All Cities Form -->
                 <div x-show="syncMode === 'bulk'" class="space-y-4">
-                    <form method="POST" action="{{ route('admin.locations.sync-all') }}" @submit="syncModalOpen = false">
-                        @csrf
-                        <div class="space-y-4">
-                            <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-2">
-                                <div class="font-bold text-slate-900 text-xs sm:text-sm">Jangkauan Sinkronisasi Massal:</div>
-                                <div class="text-xs text-slate-600 leading-relaxed">
-                                    Sistem akan secara berurutan memindai seluruh <strong class="text-emerald-700">{{ count($cities) }} Kota Aktif</strong> yang tersimpan di database.
-                                </div>
+                    <div class="space-y-4">
+                        <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-2">
+                            <div class="font-bold text-slate-900 text-xs sm:text-sm">Jangkauan Sinkronisasi Massal:</div>
+                            <div class="text-xs text-slate-600 leading-relaxed">
+                                Sistem akan secara berurutan memindai seluruh <strong class="text-emerald-700">{{ count($cities) }} Kota Aktif</strong> yang tersimpan di database secara transparan dengan log aktivitas real-time tanpa pembekuan layar.
                             </div>
-
-                            <div class="space-y-2">
-                                <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider">Radius per Kota</label>
-                                <select name="radius" class="w-full px-4 py-3 rounded-2xl bg-slate-50 border border-slate-200 text-slate-900 text-xs sm:text-sm font-semibold focus:outline-none focus:border-emerald-600 focus:bg-white transition-all">
-                                    <option value="10000" selected>10,000 meter (10 km - Standar Recomendation)</option>
-                                    <option value="15000">15,000 meter (15 km)</option>
-                                </select>
-                            </div>
-
-                            <button type="submit" class="w-full py-3.5 px-4 rounded-2xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs sm:text-sm transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer">
-                                <span>⚡ Jalankan Sinkronisasi Massal Seluruh Kota</span>
-                            </button>
                         </div>
-                    </form>
+
+                        <div class="space-y-2">
+                            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider">Radius per Kota</label>
+                            <select x-model="selectedRadius" class="w-full px-4 py-3 rounded-2xl bg-slate-50 border border-slate-200 text-slate-900 text-xs sm:text-sm font-semibold focus:outline-none focus:border-emerald-600 focus:bg-white transition-all">
+                                <option value="10000" selected>10,000 meter (10 km - Standar Recommendation)</option>
+                                <option value="15000">15,000 meter (15 km)</option>
+                            </select>
+                        </div>
+
+                        <button type="button" 
+                                @click="startBulkSyncStepByStep()" 
+                                :disabled="bulkSyncing"
+                                :class="bulkSyncing ? 'bg-slate-400 cursor-not-allowed' : 'bg-slate-900 hover:bg-slate-800 cursor-pointer'"
+                                class="w-full py-3.5 px-4 rounded-2xl text-white font-bold text-xs sm:text-sm transition-all shadow-md flex items-center justify-center gap-2">
+                            <svg class="w-4 h-4 text-emerald-400" :class="{ 'animate-spin': bulkSyncing }" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+                            <span x-text="bulkSyncing ? '⏳ Sinkronisasi Massal Sedang Berjalan...' : '⚡ Jalankan Sinkronisasi Massal Seluruh Kota'"></span>
+                        </button>
+                    </div>
                 </div>
 
             </div>
@@ -343,37 +388,150 @@
                 lastUpdatedTime: new Date().toLocaleTimeString('id-ID'),
                 pollTimer: null,
 
+                // Bulk Sync State
+                bulkSyncing: false,
+                bulkCompleted: false,
+                bulkProgressPercent: 0,
+                bulkCurrentIndex: 0,
+                bulkTotalCities: {{ count($cities) }},
+                bulkCurrentCityName: '',
+                bulkLogs: [],
+                bulkTotals: { discovered: 0, created: 0, updated: 0 },
+                bulkState: null,
+
                 init() {
                     if (this.latestLog && this.latestLog.status === 'running') {
                         this.syncing = true;
-                        this.startPolling();
+                    }
+                    this.checkStatus();
+                    this.startPolling();
+                },
+
+                async checkStatus() {
+                    try {
+                        const res = await fetch("{{ route('admin.locations.sync-status') }}");
+                        if (res.ok) {
+                            const data = await res.json();
+                            if (data.latest_log) {
+                                this.latestLog = data.latest_log;
+                                this.lastUpdatedTime = new Date().toLocaleTimeString('id-ID');
+                            }
+                            if (data.bulk_sync) {
+                                this.bulkState = data.bulk_sync;
+                                this.bulkTotalCities = data.bulk_sync.total_cities || this.bulkTotalCities;
+                                this.bulkLogs = data.bulk_sync.logs || [];
+                                this.bulkTotals = data.bulk_sync.totals || { discovered: 0, created: 0, updated: 0 };
+                                this.bulkCurrentIndex = data.bulk_sync.current_index || 0;
+                                this.bulkCurrentCityName = data.bulk_sync.current_city_name || '';
+                                
+                                if (data.bulk_sync.is_running) {
+                                    this.bulkSyncing = true;
+                                    this.bulkCompleted = false;
+                                    this.bulkProgressPercent = Math.round((this.bulkCurrentIndex / this.bulkTotalCities) * 100);
+                                } else if (data.bulk_sync.completed) {
+                                    this.bulkSyncing = false;
+                                    this.bulkCompleted = true;
+                                    this.bulkProgressPercent = 100;
+                                }
+                            }
+                        }
+                    } catch (e) {
+                        console.error("Status check error", e);
                     }
                 },
 
                 startPolling() {
                     if (this.pollTimer) clearInterval(this.pollTimer);
                     this.pollTimer = setInterval(async () => {
+                        await this.checkStatus();
+                    }, 3000);
+                },
+
+                async startBulkSyncStepByStep() {
+                    if (this.bulkSyncing) return;
+
+                    this.syncModalOpen = false;
+                    this.bulkSyncing = true;
+                    this.bulkCompleted = false;
+                    this.bulkProgressPercent = 0;
+                    this.bulkCurrentIndex = 0;
+                    this.bulkLogs = [];
+                    this.bulkTotals = { discovered: 0, created: 0, updated: 0 };
+
+                    let step = 0;
+                    let completed = false;
+
+                    while (!completed && this.bulkSyncing) {
                         try {
-                            const res = await fetch("{{ route('admin.locations.sync-status') }}");
-                            if (res.ok) {
-                                const data = await res.json();
-                                if (data.latest_log) {
-                                    this.latestLog = data.latest_log;
-                                    this.lastUpdatedTime = new Date().toLocaleTimeString('id-ID');
-                                    
-                                    if (this.latestLog.status !== 'running') {
-                                        this.syncing = false;
-                                        clearInterval(this.pollTimer);
-                                        setTimeout(() => {
-                                            window.location.reload();
-                                        }, 1200);
-                                    }
-                                }
+                            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content;
+                            const res = await fetch("{{ route('admin.locations.sync-all-step') }}", {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'X-CSRF-TOKEN': csrfToken,
+                                    'Accept': 'application/json'
+                                },
+                                body: JSON.stringify({
+                                    step_index: step,
+                                    radius: this.selectedRadius
+                                })
+                            });
+
+                            if (!res.ok) {
+                                console.error("Bulk sync step error", res.status);
+                                break;
                             }
-                        } catch (e) {
-                            console.error("Poll error", e);
+
+                            const data = await res.json();
+                            completed = data.completed;
+                            step = data.step_index;
+                            this.bulkProgressPercent = data.progress_percent || 0;
+                            this.bulkCurrentCityName = data.current_city_name || '';
+                            this.bulkCurrentIndex = step;
+                            if (data.totals) this.bulkTotals = data.totals;
+
+                            if (data.bulk_state && data.bulk_state.logs) {
+                                this.bulkLogs = data.bulk_state.logs;
+                            }
+
+                            // Auto-scroll terminal
+                            this.$nextTick(() => {
+                                const term = document.getElementById('bulkSyncTerminal');
+                                if (term) term.scrollTop = term.scrollHeight;
+                            });
+
+                            if (completed) {
+                                this.bulkSyncing = false;
+                                this.bulkCompleted = true;
+                                this.bulkProgressPercent = 100;
+                                break;
+                            }
+                        } catch (err) {
+                            console.error("Step execution failed", err);
+                            break;
                         }
-                    }, 2500);
+                    }
+                },
+
+                async resetBulkSyncLock() {
+                    if (!confirm('Apakah Anda yakin ingin me-reset status lock sinkronisasi massal?')) return;
+                    try {
+                        const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content;
+                        await fetch("{{ route('admin.locations.cancel-bulk-sync') }}", {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': csrfToken
+                            }
+                        });
+                        this.bulkSyncing = false;
+                        this.bulkCompleted = false;
+                        this.bulkState = null;
+                        this.bulkLogs = [];
+                        window.location.reload();
+                    } catch (e) {
+                        console.error("Reset failed", e);
+                    }
                 }
             }));
         });
