@@ -248,6 +248,21 @@ class AdminLocationController extends Controller
         ]);
     }
 
+    public function clearSyncLogs(Request $request)
+    {
+        LocationSyncLog::query()->delete();
+        Cache::forget('urbanpulse_bulk_sync_lock');
+
+        if ($request->wantsJson()) {
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Seluruh log dan status sinkronisasi berhasil dibersihkan.'
+            ]);
+        }
+
+        return redirect()->route('admin.locations.index')->with('success', 'Seluruh log dan status sinkronisasi berhasil dibersihkan.');
+    }
+
     public function syncStatus()
     {
         $activeCity = view()->shared('activeCity');
