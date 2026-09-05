@@ -167,9 +167,15 @@
                 },
 
                 clearChat() {
-                    if (confirm('Apakah Anda yakin ingin membersihkan riwayat obrolan ini?')) {
-                        this.messages = [];
-                    }
+                    confirmAction({
+                        title: 'Bersihkan Obrolan',
+                        message: 'Apakah Anda yakin ingin membersihkan riwayat obrolan ini?',
+                        confirmText: 'Ya, Bersihkan',
+                        variant: 'warning',
+                        onConfirm: () => {
+                            this.messages = [];
+                        }
+                    });
                 },
 
                 copyText(text, index) {

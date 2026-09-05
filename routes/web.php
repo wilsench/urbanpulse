@@ -70,6 +70,9 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
 
     Route::post('/locations/sync', [AdminLocationController::class, 'syncLocations'])->name('locations.sync');
     Route::post('/locations/sync-all', [AdminLocationController::class, 'syncAllCities'])->name('locations.sync-all');
+    Route::post('/locations/sync-all-step', [AdminLocationController::class, 'syncAllStep'])->name('locations.sync-all-step');
+    Route::post('/locations/cancel-bulk-sync', [AdminLocationController::class, 'cancelBulkSync'])->name('locations.cancel-bulk-sync');
+    Route::post('/locations/clear-logs', [AdminLocationController::class, 'clearSyncLogs'])->name('locations.clear-logs');
     Route::get('/locations/sync-status', [AdminLocationController::class, 'syncStatus'])->name('locations.sync-status');
     Route::resource('locations', AdminLocationController::class);
     Route::get('/environment', [AdminEnvironmentalController::class, 'index'])->name('environment.index');

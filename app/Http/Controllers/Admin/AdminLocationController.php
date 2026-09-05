@@ -9,6 +9,7 @@ use App\Models\Location;
 use App\Models\LocationSyncLog;
 use App\Services\LocationSyncService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Str;
 
 class AdminLocationController extends Controller
@@ -52,6 +53,17 @@ class AdminLocationController extends Controller
             'radius' => ['required', 'integer', 'between:1000,50000'],
         ]);
 
+        $bulkState = Cache::get('urbanpulse_bulk_sync_lock');
+        if ($bulkState && !empty($bulkState['is_running'])) {
+            if ($request->wantsJson()) {
+                return response()->json([
+                    'status' => 'failed',
+                    'message' => 'Sinkronisasi massal seluruh kota sedang berjalan di latar belakang. Mohon tunggu hingga selesai.'
+                ], 429);
+            }
+            return redirect()->route('admin.locations.index')->with('error', 'Sinkronisasi massal seluruh kota sedang berjalan di latar belakang.');
+        }
+
         $city = City::findOrFail($request->input('city_id'));
         $radius = (int) $request->input('radius', 10000);
 
@@ -64,14 +76,10 @@ class AdminLocationController extends Controller
             'started_at' => now(),
         ]);
 
-        // Process directly/dispatch job safely
         if (config('queue.default') === 'sync') {
             $result = $syncService->syncCityLocations($city, $radius, $syncLog->id);
         } else {
-            // Dispatch background queue job
             SyncCityLocationsJob::dispatch($city, $radius, $syncLog->id);
-            
-            // Also execute in background or synchronously for quick response
             $syncService->syncCityLocations($city, $radius, $syncLog->id);
         }
 
@@ -129,6 +137,132 @@ class AdminLocationController extends Controller
         return redirect()->route('admin.locations.index')->with('success', $msg);
     }
 
+    public function syncAllStep(Request $request, LocationSyncService $syncService)
+    {
+        $stepIndex = (int) $request->input('step_index', 0);
+        $radius = (int) $request->input('radius', 10000);
+        
+        $activeCities = City::where('is_active', true)->orderBy('name', 'asc')->get();
+        $totalCities = count($activeCities);
+
+        $bulkState = Cache::get('urbanpulse_bulk_sync_lock', [
+            'batch_id' => 'bulk_' . time(),
+            'is_running' => true,
+            'current_index' => 0,
+            'total_cities' => $totalCities,
+            'radius' => $radius,
+            'started_at' => now()->toIso8601String(),
+            'updated_at' => now()->toIso8601String(),
+            'current_city_name' => '',
+            'synced_cities_count' => 0,
+            'totals' => ['discovered' => 0, 'created' => 0, 'updated' => 0],
+            'logs' => []
+        ]);
+
+        if ($stepIndex >= $totalCities || $totalCities === 0) {
+            $bulkState['is_running'] = false;
+            $bulkState['completed'] = true;
+            $bulkState['updated_at'] = now()->toIso8601String();
+            Cache::put('urbanpulse_bulk_sync_lock', $bulkState, 3600);
+
+            return response()->json([
+                'completed' => true,
+                'progress_percent' => 100,
+                'synced_cities_count' => $bulkState['synced_cities_count'],
+                'totals' => $bulkState['totals'],
+                'message' => "Sinkronisasi massal seluruh kota selesai! Total {$bulkState['synced_cities_count']} kota dipindai.",
+                'bulk_state' => $bulkState
+            ]);
+        }
+
+        $targetCity = $activeCities[$stepIndex];
+        $bulkState['current_city_name'] = $targetCity->name;
+        $bulkState['current_index'] = $stepIndex;
+        $bulkState['is_running'] = true;
+
+        $syncLog = LocationSyncLog::create([
+            'city_id' => $targetCity->id,
+            'provider' => 'openstreetmap',
+            'search_radius' => $radius,
+            'status' => 'running',
+            'started_at' => now(),
+        ]);
+
+        $syncService->syncCityLocations($targetCity, $radius, $syncLog->id);
+        $syncLog->refresh();
+
+        $logEntry = [
+            'step' => $stepIndex + 1,
+            'city_id' => $targetCity->id,
+            'city_name' => $targetCity->name,
+            'province' => $targetCity->province,
+            'status' => $syncLog->status,
+            'discovered' => $syncLog->discovered_count ?? 0,
+            'created' => $syncLog->created_count ?? 0,
+            'updated' => $syncLog->updated_count ?? 0,
+            'error_message' => $syncLog->error_message,
+            'time' => now()->format('H:i:s'),
+        ];
+
+        $bulkState['logs'][] = $logEntry;
+        if ($syncLog->status === 'success') {
+            $bulkState['synced_cities_count']++;
+            $bulkState['totals']['discovered'] += ($syncLog->discovered_count ?? 0);
+            $bulkState['totals']['created'] += ($syncLog->created_count ?? 0);
+            $bulkState['totals']['updated'] += ($syncLog->updated_count ?? 0);
+        }
+
+        $nextIndex = $stepIndex + 1;
+        $bulkState['current_index'] = $nextIndex;
+        $bulkState['updated_at'] = now()->toIso8601String();
+
+        if ($nextIndex >= $totalCities) {
+            $bulkState['is_running'] = false;
+            $bulkState['completed'] = true;
+        }
+
+        Cache::put('urbanpulse_bulk_sync_lock', $bulkState, 3600);
+
+        $progressPercent = round(($nextIndex / $totalCities) * 100);
+
+        return response()->json([
+            'completed' => $nextIndex >= $totalCities,
+            'step_index' => $nextIndex,
+            'total_cities' => $totalCities,
+            'progress_percent' => $progressPercent,
+            'current_city_name' => $targetCity->name,
+            'next_city_name' => $nextIndex < $totalCities ? $activeCities[$nextIndex]->name : null,
+            'last_log' => $logEntry,
+            'totals' => $bulkState['totals'],
+            'bulk_state' => $bulkState,
+            'message' => "Selesai mensinkronkan {$targetCity->name} ({$nextIndex}/{$totalCities})"
+        ]);
+    }
+
+    public function cancelBulkSync()
+    {
+        Cache::forget('urbanpulse_bulk_sync_lock');
+        return response()->json([
+            'success' => true,
+            'message' => 'Status sinkronisasi massal telah di-reset.'
+        ]);
+    }
+
+    public function clearSyncLogs(Request $request)
+    {
+        LocationSyncLog::query()->delete();
+        Cache::forget('urbanpulse_bulk_sync_lock');
+
+        if ($request->wantsJson()) {
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Seluruh log dan status sinkronisasi berhasil dibersihkan.'
+            ]);
+        }
+
+        return redirect()->route('admin.locations.index')->with('success', 'Seluruh log dan status sinkronisasi berhasil dibersihkan.');
+    }
+
     public function syncStatus()
     {
         $activeCity = view()->shared('activeCity');
@@ -138,8 +272,11 @@ class AdminLocationController extends Controller
         }
         $latestLog = $query->first();
 
+        $bulkState = Cache::get('urbanpulse_bulk_sync_lock');
+
         return response()->json([
             'latest_log' => $latestLog,
+            'bulk_sync' => $bulkState,
             'server_time' => now()->toIso8601String(),
         ]);
     }
