@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AboutController;
+use App\Http\Controllers\Admin\AdminCityController;
 use App\Http\Controllers\Admin\AdminDashboardController;
 use App\Http\Controllers\Admin\AdminEnvironmentalController;
 use App\Http\Controllers\Admin\AdminLocationController;
@@ -60,7 +61,15 @@ Route::middleware('auth')->group(function () {
 // Admin Routes
 Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/', [AdminDashboardController::class, 'index'])->name('dashboard');
+    
+    // Cities Management
+    Route::get('/cities/api/search-indonesia', [AdminCityController::class, 'searchIndonesianCities'])->name('cities.api-search');
+    Route::post('/cities/sync-indonesia', [AdminCityController::class, 'syncIndonesiaCities'])->name('cities.sync-indonesia');
+    Route::patch('/cities/{city}/toggle', [AdminCityController::class, 'toggleActive'])->name('cities.toggle-active');
+    Route::resource('cities', AdminCityController::class);
+
     Route::post('/locations/sync', [AdminLocationController::class, 'syncLocations'])->name('locations.sync');
+    Route::post('/locations/sync-all', [AdminLocationController::class, 'syncAllCities'])->name('locations.sync-all');
     Route::get('/locations/sync-status', [AdminLocationController::class, 'syncStatus'])->name('locations.sync-status');
     Route::resource('locations', AdminLocationController::class);
     Route::get('/environment', [AdminEnvironmentalController::class, 'index'])->name('environment.index');

@@ -64,7 +64,8 @@
             <div class="lg:col-span-2 bg-white border border-slate-200 rounded-3xl p-5 sm:p-8 shadow-sm space-y-4 sm:space-y-6">
                 <h2 class="text-lg sm:text-xl font-bold text-slate-900">Riwayat Aksi Hijau Saya</h2>
 
-                <div class="overflow-x-auto -mx-2 px-2">
+                <!-- Desktop View Table -->
+                <div class="hidden sm:block overflow-x-auto -mx-2 px-2">
                     <table class="w-full text-left border-collapse text-xs sm:text-sm min-w-[500px]">
                         <thead>
                             <tr class="border-b border-slate-200 text-slate-500 font-bold">
@@ -93,6 +94,36 @@
                             @endforelse
                         </tbody>
                     </table>
+                </div>
+
+                <!-- Mobile View Responsive Cards -->
+                <div class="sm:hidden space-y-3">
+                    @forelse($activities as $act)
+                        <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-2.5 shadow-xs">
+                            <div class="flex items-center justify-between pb-2 border-b border-slate-200/80">
+                                <span class="font-bold text-slate-900 text-sm uppercase">🌱 {{ $act->action_type }}</span>
+                                <span class="text-xs text-slate-500 font-mono">{{ $act->performed_at->format('d/m/Y') }}</span>
+                            </div>
+                            <div class="grid grid-cols-3 gap-2 text-xs text-center">
+                                <div class="p-2 bg-white rounded-xl border border-slate-200/80">
+                                    <span class="text-slate-500 block text-[10px] uppercase font-bold">Jarak</span>
+                                    <span class="font-bold text-slate-900 text-xs">{{ $act->distance_km }} km</span>
+                                </div>
+                                <div class="p-2 bg-white rounded-xl border border-slate-200/80">
+                                    <span class="text-slate-500 block text-[10px] uppercase font-bold">CO2 Hemat</span>
+                                    <span class="font-bold text-emerald-700 text-xs">+{{ $act->co2_avoided_kg }} kg</span>
+                                </div>
+                                <div class="p-2 bg-white rounded-xl border border-slate-200/80">
+                                    <span class="text-slate-500 block text-[10px] uppercase font-bold">Poin</span>
+                                    <span class="font-bold text-amber-700 text-xs">+{{ $act->eco_points_earned }} pts</span>
+                                </div>
+                            </div>
+                        </div>
+                    @empty
+                        <div class="py-8 text-center text-slate-500 bg-slate-50 rounded-2xl border border-slate-200 p-4 text-sm">
+                            Belum ada riwayat aktivitas. Tambahkan di formulir di atas.
+                        </div>
+                    @endforelse
                 </div>
 
                 <div class="pt-4 border-t border-slate-100">

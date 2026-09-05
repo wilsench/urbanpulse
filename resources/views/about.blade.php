@@ -1,11 +1,16 @@
 <x-layouts.app title="Tentang UrbanPulse — Infinitera 2.0">
     <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-12 space-y-8 sm:space-y-12">
 
-        <!-- Header -->
-        <div class="text-center max-w-3xl mx-auto space-y-3 sm:space-y-4">
-            <span class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-100 text-emerald-800 text-xs sm:text-sm font-semibold">
-                Infinitera 2.0 Web Development Competition
-            </span>
+        <!-- Header with Brand Logo -->
+        <div class="text-center max-w-3xl mx-auto space-y-4">
+            <div class="inline-flex items-center justify-center p-3 bg-white rounded-3xl shadow-md border border-emerald-100 mb-2">
+                <img src="{{ asset('images/logo.png') }}" alt="UrbanPulse Logo Tanaman" class="w-16 h-16 sm:w-20 sm:h-20 object-contain rounded-2xl" />
+            </div>
+            <div>
+                <span class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-100 text-emerald-800 text-xs sm:text-sm font-semibold">
+                    Infinitera 2.0 Web Development Competition
+                </span>
+            </div>
             <h1 class="text-2xl sm:text-4xl font-bold text-slate-900 tracking-tight">UrbanPulse: Asisten Kota Berkelanjutan</h1>
             <p class="text-slate-600 text-sm sm:text-lg leading-relaxed">
                 Menjembatani inovasi teknologi web dan prinsip keberlanjutan untuk menciptakan dampak terukur bagi generasi masa depan.

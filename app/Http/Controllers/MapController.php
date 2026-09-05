@@ -29,7 +29,7 @@ class MapController extends Controller
         $airQuality = $airQualityService->getCurrentAirQuality($lat, $lng);
 
         $formattedLocations = $locations->map(function ($loc) use ($scoreService, $weather, $airQuality) {
-            $score = $scoreService->calculateScore($loc);
+            $score = $scoreService->calculateScore($loc, 'exercise', 'low', 'afternoon', 'bicycle', $weather, $airQuality);
             return [
                 'id' => $loc->id,
                 'name' => $loc->name,
@@ -45,10 +45,10 @@ class MapController extends Controller
                 'source' => $loc->source,
                 'source_id' => $loc->source_id,
                 'match_score' => $score['total_score'],
-                'weather_desc' => $weather['weather_description'],
-                'temperature' => $weather['temperature'],
-                'aqi_status' => $airQuality['air_quality_status'],
-                'aqi_val' => $airQuality['air_quality_index'],
+                'weather_desc' => $weather['weather_description'] ?? 'Cerah Berawan',
+                'temperature' => $weather['temperature'] ?? 28,
+                'aqi_status' => $airQuality['air_quality_status'] ?? 'Baik',
+                'aqi_val' => $airQuality['air_quality_index'] ?? 35,
             ];
         });
 
