@@ -349,5 +349,8 @@
         </div>
     </div>
 
+    <!-- Global Custom Confirm Modal -->
+    <x-confirm-modal />
+
 </body>
 </html>

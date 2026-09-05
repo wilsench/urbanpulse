@@ -13,11 +13,14 @@ class OverpassLocationProvider implements LocationProviderInterface
 
     public function __construct()
     {
-        // Place fast mirrors first to prevent timeouts
+        // Independent global Overpass API mirrors to prevent single server rate-limiting
         $this->endpointUrls = [
+            'https://overpass.kumi.systems/api/interpreter',
             'https://lz4.overpass-api.de/api/interpreter',
             'https://z.overpass-api.de/api/interpreter',
             'https://overpass-api.de/api/interpreter',
+            'https://overpass.nchc.org.tw/api/interpreter',
+            'https://maps.mail.ru/osm/tools/overpass/api/interpreter',
         ];
     }
 

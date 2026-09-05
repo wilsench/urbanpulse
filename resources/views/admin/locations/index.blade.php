@@ -16,11 +16,9 @@
                 <!-- Sync Trigger Modal Button -->
                 <button type="button" 
                         @click="syncModalOpen = true" 
-                        :disabled="bulkSyncing"
-                        :class="bulkSyncing ? 'bg-slate-400 cursor-not-allowed opacity-80' : 'bg-slate-900 hover:bg-slate-800 cursor-pointer'"
-                        class="px-4 py-2.5 rounded-xl text-white font-bold text-xs transition-all shadow-xs flex items-center gap-1.5 min-h-[40px]">
-                    <svg class="w-4 h-4 text-emerald-400" :class="{ 'animate-spin': syncing || bulkSyncing }" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
-                    <span x-text="bulkSyncing ? '⚡ Sinkron Massal Sedang Berjalan...' : 'Sinkronkan Data Lokasi (API)'"></span>
+                        class="px-4 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs transition-all shadow-xs flex items-center gap-1.5 min-h-[40px] cursor-pointer">
+                    <svg class="w-4 h-4 text-emerald-400" :class="{ 'animate-spin': syncing }" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+                    <span>Sinkronkan Data Lokasi (API)</span>
                 </button>
 
                 <!-- Add Location Button -->
@@ -133,11 +131,11 @@
 
         <!-- Filter & Search Control Bar for Locations Table -->
         <div class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-xs">
-            <form method="GET" action="{{ route('admin.locations.index') }}" class="flex flex-col sm:flex-row gap-3">
+            <form method="GET" action="{{ route('admin.locations.index') }}" @submit="searching = true" class="flex flex-col sm:flex-row gap-3">
                 
                 <!-- City Filter Select -->
                 <div class="w-full sm:w-64">
-                    <select name="city_id" onchange="this.form.submit()" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 text-xs sm:text-sm font-semibold focus:outline-none focus:border-emerald-600 focus:bg-white transition-all">
+                    <select name="city_id" :disabled="searching" onchange="searching = true; this.form.requestSubmit ? this.form.requestSubmit() : this.form.submit()" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 text-xs sm:text-sm font-semibold focus:outline-none focus:border-emerald-600 focus:bg-white transition-all disabled:opacity-60 disabled:cursor-not-allowed">
                         <option value="all" {{ $selectedCityId === 'all' ? 'selected' : '' }}>&bull; Semua Kota Indonesia</option>
                         @foreach($cities as $cOption)
                             <option value="{{ $cOption->id }}" {{ $selectedCityId == $cOption->id || (!$selectedCityId && $activeCity && $activeCity->id === $cOption->id) ? 'selected' : '' }}>
@@ -150,23 +148,35 @@
                 <!-- Search Input -->
                 <div class="relative flex-grow">
                     <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                        <svg x-show="!searching" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                        <svg x-show="searching" class="w-4 h-4 text-emerald-600 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24" x-cloak><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
                     </div>
                     <input type="text" 
                            name="search" 
                            value="{{ $search }}" 
+                           :disabled="searching"
                            placeholder="Cari berdasarkan nama lokasi, alamat, atau kategori..." 
-                           class="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 placeholder-slate-400 text-xs sm:text-sm focus:outline-none focus:border-emerald-600 focus:bg-white transition-all">
+                           class="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 placeholder-slate-400 text-xs sm:text-sm focus:outline-none focus:border-emerald-600 focus:bg-white transition-all disabled:opacity-60 disabled:cursor-not-allowed">
                 </div>
 
-                <button type="submit" class="px-5 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs transition-colors shrink-0">
-                    Cari Lokasi
+                <button type="submit" 
+                        :disabled="searching"
+                        :class="searching ? 'bg-slate-700 cursor-not-allowed' : 'bg-slate-900 hover:bg-slate-800 cursor-pointer'"
+                        class="px-5 py-2.5 rounded-xl text-white font-bold text-xs transition-colors shrink-0 flex items-center justify-center gap-1.5 min-w-[110px]">
+                    <svg x-show="searching" class="w-3.5 h-3.5 text-emerald-400 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24" x-cloak><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+                    <span x-text="searching ? 'Mencari...' : 'Cari Lokasi'"></span>
                 </button>
             </form>
         </div>
 
-        <!-- Locations Table -->
-        <div class="bg-white border border-slate-200/80 rounded-3xl overflow-hidden shadow-xs">
+        <!-- Locations Table with Search Overlay -->
+        <div class="bg-white border border-slate-200/80 rounded-3xl overflow-hidden shadow-xs relative">
+            <div x-show="searching" class="absolute inset-0 bg-white/75 backdrop-blur-[1px] z-20 flex items-center justify-center" x-cloak>
+                <div class="inline-flex items-center gap-2.5 px-4 py-2.5 rounded-2xl bg-slate-900 text-white text-xs font-bold shadow-xl">
+                    <svg class="w-4 h-4 text-emerald-400 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+                    <span>Memproses Pencarian Lokasi...</span>
+                </div>
+            </div>
             <div class="overflow-x-auto">
                 <table class="w-full text-left text-xs sm:text-sm">
                     <thead class="bg-slate-50 border-b border-slate-200/80 text-slate-500 font-bold uppercase tracking-wider text-[10px] sm:text-xs">
@@ -228,7 +238,7 @@
                                         <a href="{{ route('admin.locations.edit', $loc->id) }}" class="p-1.5 rounded-lg text-slate-400 hover:text-blue-600 hover:bg-blue-50 transition-colors" title="Edit Lokasi">
                                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
                                         </a>
-                                        <form method="POST" action="{{ route('admin.locations.destroy', $loc->id) }}" onsubmit="return confirm('Apakah Anda yakin ingin menghapus lokasi ini?');" class="inline">
+                                        <form method="POST" action="{{ route('admin.locations.destroy', $loc->id) }}" onsubmit="event.preventDefault(); confirmAction({ title: 'Hapus Lokasi', message: 'Apakah Anda yakin ingin menghapus {{ addslashes($loc->name) }} secara permanen?', confirmText: 'Ya, Hapus Lokasi', variant: 'danger', onConfirm: () => this.submit() }); return false;" class="inline">
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit" class="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors" title="Hapus Lokasi">
@@ -286,36 +296,19 @@
 
                 <div class="p-4 rounded-2xl bg-emerald-50 border border-emerald-200/80 text-xs text-emerald-900 leading-relaxed space-y-1">
                     <div class="font-bold text-emerald-950 flex items-center gap-1">
-                        <span>💡 Praktik Terbaik (Best Practice):</span>
+                        <span>💡 Sinkronisasi Lokasi Per-Kota (Rekomendasi Cepat):</span>
                     </div>
-                    <p>Pilih kota spesifik untuk sinkronisasi cepat (10 km standar), atau pilih <strong>"⚡ Seluruh Kota (Bulk All)"</strong> untuk memproses seluruh kota aktif secara berurutan dengan log aktivitas real-time tanpa pembekuan layar.</p>
+                    <p>Pilih kota spesifik (seperti Kota Bogor, Kota Bandung, Jakarta Selatan) untuk memicu pencarian dan pembaruan lokasi taman/fasilitas publik dari OpenStreetMap (Overpass API) secara instan.</p>
                 </div>
 
-                <!-- Warning when bulk sync is active -->
-                <div x-show="bulkSyncing" class="p-3.5 rounded-2xl bg-amber-50 border border-amber-200 text-xs text-amber-900 font-semibold space-y-1">
-                    <div>⚠️ Sinkronisasi Massal Sedang Berjalan:</div>
-                    <div class="text-[11px] font-normal text-amber-800">Proses sinkronisasi massal sedang berlangsung di latar belakang. Pengaturan tidak dapat diubah hingga proses selesai.</div>
-                </div>
-
-                <!-- Tab Choices: Per-Kota vs Bulk All -->
-                <div class="flex rounded-2xl bg-slate-100 p-1 text-xs font-bold">
-                    <button type="button" @click="syncMode = 'single'" :class="syncMode === 'single' ? 'bg-white text-slate-900 shadow-xs' : 'text-slate-600 hover:text-slate-900'" class="flex-1 py-2 rounded-xl transition-all">
-                        Per-Kota Spesifik
-                    </button>
-                    <button type="button" @click="syncMode = 'bulk'" :class="syncMode === 'bulk' ? 'bg-emerald-600 text-white shadow-xs' : 'text-slate-600 hover:text-slate-900'" class="flex-1 py-2 rounded-xl transition-all">
-                        ⚡ Seluruh Kota (Bulk All)
-                    </button>
-                </div>
-
-                <!-- Mode 1: Single City Form -->
-                <div x-show="syncMode === 'single'" class="space-y-4">
-                    <form method="POST" action="{{ route('admin.locations.sync') }}" @submit="syncModalOpen = false">
-                        @csrf
+                <!-- Single City Sync Form -->
+                <div class="space-y-4">
+                    <form @submit.prevent="startSingleSync()">
                         <div class="space-y-4">
                             <!-- City Search Select -->
                             <div class="space-y-2">
                                 <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider">Pilih Kota Target</label>
-                                <select name="city_id" x-model="selectedCityId" class="w-full px-4 py-3 rounded-2xl bg-slate-50 border border-slate-200 text-slate-900 text-xs sm:text-sm font-semibold focus:outline-none focus:border-emerald-600 focus:bg-white transition-all">
+                                <select name="city_id" x-model="selectedCityId" :disabled="syncing" class="w-full px-4 py-3 rounded-2xl bg-slate-50 border border-slate-200 text-slate-900 text-xs sm:text-sm font-semibold focus:outline-none focus:border-emerald-600 focus:bg-white transition-all disabled:opacity-60">
                                     @foreach($cities as $cOption)
                                         <option value="{{ $cOption->id }}">
                                             {{ $cOption->name }} ({{ $cOption->province }})
@@ -327,48 +320,23 @@
                             <!-- Radius Select -->
                             <div class="space-y-2">
                                 <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider">Radius Jangkauan Pencarian</label>
-                                <select name="radius" x-model="selectedRadius" class="w-full px-4 py-3 rounded-2xl bg-slate-50 border border-slate-200 text-slate-900 text-xs sm:text-sm font-semibold focus:outline-none focus:border-emerald-600 focus:bg-white transition-all">
-                                    <option value="5000">5,000 meter (5 km - Area Kota)</option>
+                                <select name="radius" x-model="selectedRadius" :disabled="syncing" class="w-full px-4 py-3 rounded-2xl bg-slate-50 border border-slate-200 text-slate-900 text-xs sm:text-sm font-semibold focus:outline-none focus:border-emerald-600 focus:bg-white transition-all disabled:opacity-60">
+                                    <option value="5000">5,000 meter (5 km - Area Pusat Kota)</option>
                                     <option value="10000" selected>10,000 meter (10 km - Standar Perkotaan)</option>
-                                    <option value="15000">15,000 meter (15 km - Metropolitans)</option>
+                                    <option value="15000">15,000 meter (15 km - Metropolitan)</option>
                                     <option value="25000">25,000 meter (25 km - Karesidenan)</option>
                                 </select>
                             </div>
 
-                            <button type="submit" :disabled="bulkSyncing" class="w-full py-3.5 px-4 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs sm:text-sm transition-all shadow-md shadow-emerald-600/20 flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed">
-                                <span>Mulai Sinkronisasi Kota</span>
+                            <button type="submit" 
+                                    :disabled="syncing"
+                                    :class="syncing ? 'bg-slate-400 cursor-not-allowed' : 'bg-emerald-600 hover:bg-emerald-700 cursor-pointer'"
+                                    class="w-full py-3.5 px-4 rounded-2xl text-white font-bold text-xs sm:text-sm transition-all shadow-md shadow-emerald-600/20 flex items-center justify-center gap-2">
+                                <svg class="w-4 h-4 text-white" :class="{ 'animate-spin': syncing }" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+                                <span x-text="syncing ? 'Memproses Sinkronisasi Data...' : 'Mulai Sinkronisasi Kota'"></span>
                             </button>
                         </div>
                     </form>
-                </div>
-
-                <!-- Mode 2: Bulk All Cities Form -->
-                <div x-show="syncMode === 'bulk'" class="space-y-4">
-                    <div class="space-y-4">
-                        <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-2">
-                            <div class="font-bold text-slate-900 text-xs sm:text-sm">Jangkauan Sinkronisasi Massal:</div>
-                            <div class="text-xs text-slate-600 leading-relaxed">
-                                Sistem akan secara berurutan memindai seluruh <strong class="text-emerald-700">{{ count($cities) }} Kota Aktif</strong> yang tersimpan di database secara transparan dengan log aktivitas real-time tanpa pembekuan layar.
-                            </div>
-                        </div>
-
-                        <div class="space-y-2">
-                            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider">Radius per Kota</label>
-                            <select x-model="selectedRadius" class="w-full px-4 py-3 rounded-2xl bg-slate-50 border border-slate-200 text-slate-900 text-xs sm:text-sm font-semibold focus:outline-none focus:border-emerald-600 focus:bg-white transition-all">
-                                <option value="10000" selected>10,000 meter (10 km - Standar Recommendation)</option>
-                                <option value="15000">15,000 meter (15 km)</option>
-                            </select>
-                        </div>
-
-                        <button type="button" 
-                                @click="startBulkSyncStepByStep()" 
-                                :disabled="bulkSyncing"
-                                :class="bulkSyncing ? 'bg-slate-400 cursor-not-allowed' : 'bg-slate-900 hover:bg-slate-800 cursor-pointer'"
-                                class="w-full py-3.5 px-4 rounded-2xl text-white font-bold text-xs sm:text-sm transition-all shadow-md flex items-center justify-center gap-2">
-                            <svg class="w-4 h-4 text-emerald-400" :class="{ 'animate-spin': bulkSyncing }" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
-                            <span x-text="bulkSyncing ? '⏳ Sinkronisasi Massal Sedang Berjalan...' : '⚡ Jalankan Sinkronisasi Massal Seluruh Kota'"></span>
-                        </button>
-                    </div>
                 </div>
 
             </div>
@@ -379,6 +347,7 @@
     <script>
         document.addEventListener('alpine:init', () => {
             Alpine.data('locationSyncAdmin', () => ({
+                searching: false,
                 syncing: false,
                 syncModalOpen: false,
                 syncMode: 'single',
@@ -405,6 +374,45 @@
                     }
                     this.checkStatus();
                     this.startPolling();
+                },
+
+                async startSingleSync() {
+                    if (this.syncing) return;
+                    this.syncing = true;
+                    this.syncModalOpen = false;
+
+                    try {
+                        const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content;
+                        const res = await fetch("{{ route('admin.locations.sync') }}", {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': csrfToken,
+                                'Accept': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                city_id: this.selectedCityId,
+                                radius: this.selectedRadius
+                            })
+                        });
+
+                        if (res.ok) {
+                            const data = await res.json();
+                            if (data.log) {
+                                this.latestLog = data.log;
+                                this.lastUpdatedTime = new Date().toLocaleTimeString('id-ID');
+                            }
+                            // Auto-refresh page and location list!
+                            window.location.reload();
+                        } else {
+                            const data = await res.json();
+                            alert(data.message || 'Gagal menyinkronkan data kota.');
+                        }
+                    } catch (e) {
+                        console.error("Single sync error", e);
+                    } finally {
+                        this.syncing = false;
+                    }
                 },
 
                 async checkStatus() {
@@ -506,6 +514,9 @@
                                 this.bulkProgressPercent = 100;
                                 break;
                             }
+
+                            // Gentle 400ms pause between steps to prevent external API rate-limiting
+                            await new Promise(resolve => setTimeout(resolve, 400));
                         } catch (err) {
                             console.error("Step execution failed", err);
                             break;
@@ -514,24 +525,31 @@
                 },
 
                 async resetBulkSyncLock() {
-                    if (!confirm('Apakah Anda yakin ingin me-reset status lock sinkronisasi massal?')) return;
-                    try {
-                        const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content;
-                        await fetch("{{ route('admin.locations.cancel-bulk-sync') }}", {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'X-CSRF-TOKEN': csrfToken
+                    confirmAction({
+                        title: 'Reset Status Lock',
+                        message: 'Apakah Anda yakin ingin me-reset status lock sinkronisasi massal?',
+                        confirmText: 'Ya, Reset Status',
+                        variant: 'warning',
+                        onConfirm: async () => {
+                            try {
+                                const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content;
+                                await fetch("{{ route('admin.locations.cancel-bulk-sync') }}", {
+                                    method: 'POST',
+                                    headers: {
+                                        'Content-Type': 'application/json',
+                                        'X-CSRF-TOKEN': csrfToken
+                                    }
+                                });
+                                this.bulkSyncing = false;
+                                this.bulkCompleted = false;
+                                this.bulkState = null;
+                                this.bulkLogs = [];
+                                window.location.reload();
+                            } catch (e) {
+                                console.error("Reset failed", e);
                             }
-                        });
-                        this.bulkSyncing = false;
-                        this.bulkCompleted = false;
-                        this.bulkState = null;
-                        this.bulkLogs = [];
-                        window.location.reload();
-                    } catch (e) {
-                        console.error("Reset failed", e);
-                    }
+                        }
+                    });
                 }
             }));
         });
