@@ -1,15 +1,15 @@
-<x-layouts.admin title="Kelola Lokasi & Sinkronisasi — Admin UrbanPulse">
+<x-layouts.admin title="Kelola Lokasi & Pembaruan — UrbanPulse">
     <div class="space-y-6" x-data="locationSyncAdmin()">
         
         <!-- Header -->
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-5 border-b border-slate-200/80">
             <div>
                 <div class="flex items-center gap-2 mb-1">
-                    <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800 uppercase tracking-wider">CMS SYSTEM</span>
-                    <span class="text-xs text-slate-500 font-medium">&bull; Manajemen & Discovery Engine</span>
+                    <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800 uppercase tracking-wider">PANGKALAN DATA</span>
+                    <span class="text-xs text-slate-500 font-medium">&bull; Kelola & Pembaruan Tempat</span>
                 </div>
-                <h1 class="text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight">Manajemen & Sinkronisasi Lokasi</h1>
-                <p class="text-xs sm:text-sm text-slate-500 mt-1">Pencarian & sinkronisasi lokasi publik otomatis berbasis data terbuka OpenStreetMap (Overpass API).</p>
+                <h1 class="text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight">Kelola & Pembaruan Lokasi Publik</h1>
+                <p class="text-xs sm:text-sm text-slate-500 mt-1">Jelajahi dan perbarui lokasi taman serta fasilitas hijau di berbagai kota dengan mudah.</p>
             </div>
             
             <div class="flex flex-wrap items-center gap-2.5">
@@ -19,7 +19,7 @@
                         :disabled="cooldownRemaining > 0 || syncing"
                         class="px-4 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs transition-all shadow-xs flex items-center gap-1.5 min-h-[40px] cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed">
                     <svg class="w-4 h-4 text-emerald-400" :class="{ 'animate-spin': syncing }" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
-                    <span x-text="cooldownRemaining > 0 ? 'Cooldown (' + cooldownRemaining + 's)' : (syncing ? 'Mengambil Data...' : 'Sinkronkan Data Lokasi (API)')"></span>
+                    <span x-text="cooldownRemaining > 0 ? 'Waktu Tunggu (' + cooldownRemaining + 's)' : (syncing ? 'Sedang Memperbarui...' : 'Perbarui Data Lokasi')"></span>
                 </button>
 
                 <!-- Add Location Button -->
@@ -40,16 +40,16 @@
                     </span>
                     <div>
                         <h3 class="font-bold text-sm sm:text-base text-white flex items-center gap-2">
-                            <span x-text="bulkCompleted ? '🎉 Sinkronisasi Massal Seluruh Kota Selesai' : 'Sinkronisasi Massal Seluruh Kota Sedang Berjalan...'"></span>
+                            <span x-text="bulkCompleted ? '🎉 Pembaruan Seluruh Kota Selesai' : 'Pembaruan Seluruh Kota Sedang Berjalan...'"></span>
                             <span class="px-2 py-0.5 rounded text-[10px] font-mono bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 uppercase tracking-wider" x-text="bulkProgressPercent + '%'"></span>
                         </h3>
-                        <p class="text-xs text-slate-400" x-text="bulkCompleted ? 'Seluruh kota aktif telah berhasil dipindai dan diperbarui!' : 'Memproses Kota: ' + (bulkCurrentCityName || 'Menginisialisasi...') + ' (' + (bulkCurrentIndex || 0) + '/' + (bulkTotalCities || 0) + ')'"></p>
+                        <p class="text-xs text-slate-400" x-text="bulkCompleted ? 'Seluruh kota aktif telah berhasil diperbarui!' : 'Memproses Kota: ' + (bulkCurrentCityName || 'Menginisialisasi...') + ' (' + (bulkCurrentIndex || 0) + '/' + (bulkTotalCities || 0) + ')'"></p>
                     </div>
                 </div>
 
                 <div class="flex items-center gap-2">
                     <button type="button" @click="resetBulkSyncLock()" class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-slate-300 border border-slate-700 transition-colors">
-                        Reset Status Lock
+                        Reset Status
                     </button>
                     <button type="button" x-show="bulkCompleted" @click="window.location.reload()" class="px-3.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-xs font-bold text-white shadow-xs transition-colors">
                         Muat Ulang Halaman
@@ -71,8 +71,8 @@
             <!-- Live Terminal Output Console Log -->
             <div class="space-y-1.5">
                 <div class="text-[11px] font-bold uppercase tracking-wider text-slate-400 flex items-center justify-between">
-                    <span>🖥️ Log Aktivitas Sinkronisasi Real-Time:</span>
-                    <span class="text-[10px] text-slate-500 font-mono">Live Terminal Stream</span>
+                    <span>🖥️ Catatan Aktivitas Pembaruan:</span>
+                    <span class="text-[10px] text-slate-500 font-mono">Pembaruan Langsung</span>
                 </div>
                 <div id="bulkSyncTerminal" class="h-44 overflow-y-auto rounded-2xl bg-slate-950 p-3 font-mono text-xs text-slate-300 space-y-1.5 border border-slate-800/80 shadow-inner">
                     <template x-for="(log, idx) in bulkLogs" :key="idx">
@@ -85,7 +85,7 @@
                         </div>
                     </template>
                     <div x-show="bulkLogs.length === 0" class="text-slate-500 italic py-2">
-                        Memulai sinkronisasi massal seluruh kota...
+                        Memulai pembaruan seluruh kota...
                     </div>
                 </div>
             </div>
@@ -103,11 +103,11 @@
                             <span class="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
                         </span>
                         <span class="font-bold text-sm text-white flex items-center gap-1.5">
-                            <span>Sinkronisasi Lokasi Realtime:</span>
+                            <span>Sedang Memperbarui Lokasi:</span>
                             <span class="text-emerald-400 font-mono" x-text="selectedSyncCityName"></span>
                         </span>
                     </div>
-                    <span class="px-2.5 py-0.5 rounded-full text-[10px] font-mono bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 uppercase font-bold tracking-wider animate-pulse">FETCHING API</span>
+                    <span class="px-2.5 py-0.5 rounded-full text-[10px] font-mono bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 uppercase font-bold tracking-wider animate-pulse">MEMPERBARUI</span>
                 </div>
                 <div class="text-xs text-slate-300 flex items-center gap-2 pt-1 font-mono leading-relaxed">
                     <svg class="w-4 h-4 text-emerald-400 animate-spin shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
@@ -125,16 +125,16 @@
                         <div class="space-y-1.5 text-xs flex-grow">
                             <div class="flex flex-wrap items-center justify-between gap-2">
                                 <div class="font-bold text-sm text-amber-950 flex items-center gap-2">
-                                    <span>⚠️ Status Server OpenStreetMap Overpass</span>
+                                    <span>⚠️ Layanan Peta Publik Cukup Padat</span>
                                 </div>
                                 <template x-if="cooldownRemaining > 0">
-                                    <span class="px-2.5 py-1 rounded-lg bg-amber-200 text-amber-950 font-mono font-bold text-[11px] shadow-xs" x-text="'Cooldown: ' + cooldownRemaining + ' detik'"></span>
+                                    <span class="px-2.5 py-1 rounded-lg bg-amber-200 text-amber-950 font-mono font-bold text-[11px] shadow-xs" x-text="'Waktu Tunggu: ' + cooldownRemaining + ' detik'"></span>
                                 </template>
                             </div>
-                            <p class="text-amber-900 leading-relaxed font-medium text-xs" x-text="syncError || latestLog?.error_message || 'Server OpenStreetMap Overpass sedang mengalami pembatasan kuota (rate-limit / sibuk). Mohon tunggu 15-30 detik sebelum memicu sinkronisasi kembali. Data lokasi lama di database tetap aman.'"></p>
+                            <p class="text-amber-900 leading-relaxed font-medium text-xs" x-text="syncError || latestLog?.error_message || 'Layanan peta publik saat ini sedang cukup padat. Silakan tunggu 15-30 detik sebelum memperbarui kembali. Jangan khawatir, seluruh data lama Anda tetap aman.'"></p>
                             <div class="text-[11px] text-amber-800 font-semibold flex items-center gap-1.5 pt-0.5">
                                 <svg class="w-3.5 h-3.5 text-emerald-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
-                                <span>Jaminan Keamanan: Data lokasi lama di database tetap tersimpan dengan utuh.</span>
+                                <span>Data Anda Aman: Seluruh tempat yang sudah ada tetap terjaga dengan baik.</span>
                             </div>
                         </div>
                     </div>
@@ -149,8 +149,8 @@
             <div class="flex items-center justify-between border-b border-slate-100 pb-3">
                 <div class="font-bold text-slate-900 text-sm flex items-center gap-2">
                     <span class="w-2 h-2 rounded-full" :class="syncing ? 'bg-amber-500 animate-ping' : (latestLog?.status === 'success' ? 'bg-emerald-500' : 'bg-amber-500')"></span>
-                    <span>Status Log Sinkronisasi Terakhir (Per-Kota)</span>
-                    <span class="px-2 py-0.5 rounded text-[10px] uppercase font-mono font-bold" :class="{ 'bg-amber-100 text-amber-800': syncing || latestLog?.status === 'running', 'bg-emerald-100 text-emerald-800': latestLog?.status === 'success', 'bg-amber-100 text-amber-900 border border-amber-300': latestLog?.status === 'partial', 'bg-rose-100 text-rose-800': latestLog?.status === 'failed' }" x-text="syncing ? 'PROSES FETCHING' : (latestLog?.status || 'SIAP')"></span>
+                    <span>Status Pembaruan Terakhir</span>
+                    <span class="px-2 py-0.5 rounded text-[10px] uppercase font-mono font-bold" :class="{ 'bg-amber-100 text-amber-800': syncing || latestLog?.status === 'running', 'bg-emerald-100 text-emerald-800': latestLog?.status === 'success', 'bg-amber-100 text-amber-900 border border-amber-300': latestLog?.status === 'partial', 'bg-rose-100 text-rose-800': latestLog?.status === 'failed' }" x-text="syncing ? 'SEDANG MEMPERBARUI' : (latestLog?.status || 'SIAP')"></span>
                 </div>
                 <div class="flex items-center gap-2">
                     <button type="button" @click="clearAllSyncLogs()" class="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-[11px] font-semibold transition-colors border border-slate-200 flex items-center gap-1 cursor-pointer">
@@ -390,8 +390,8 @@
                 
                 <div class="flex items-center justify-between border-b border-slate-100 pb-4">
                     <div>
-                        <h3 class="font-bold text-slate-900 text-lg sm:text-xl">Sinkronisasi Data Lokasi (API)</h3>
-                        <p class="text-xs text-slate-500 mt-0.5">Integrasi OpenStreetMap Overpass Discovery Engine</p>
+                        <h3 class="font-bold text-slate-900 text-lg sm:text-xl">Perbarui Data Lokasi Kota</h3>
+                        <p class="text-xs text-slate-500 mt-0.5">Pembaruan Informasi Tempat Publik</p>
                     </div>
                     <button type="button" @click="syncModalOpen = false" class="p-1 rounded-xl text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
@@ -400,9 +400,9 @@
 
                 <div class="p-4 rounded-2xl bg-emerald-50 border border-emerald-200/80 text-xs text-emerald-900 leading-relaxed space-y-1">
                     <div class="font-bold text-emerald-950 flex items-center gap-1">
-                        <span>💡 Sinkronisasi Lokasi Per-Kota (Rekomendasi Cepat):</span>
+                        <span>💡 Pembaruan Per Kota:</span>
                     </div>
-                    <p>Pilih kota spesifik (seperti Kota Bogor, Kota Bandung, Jakarta Selatan) untuk memicu pencarian dan pembaruan lokasi taman/fasilitas publik dari OpenStreetMap (Overpass API) secara instan.</p>
+                    <p>Pilih kota yang ingin diperbarui (seperti Kota Bogor, Kota Bandung, atau Jakarta Selatan) untuk memperbarui daftar taman dan fasilitas publik secara langsung.</p>
                 </div>
 
                 <!-- Single City Sync Form -->
@@ -471,12 +471,12 @@
 
                             <!-- Radius Select -->
                             <div class="space-y-2">
-                                <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider">Radius Jangkauan Pencarian</label>
+                                <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider">Jangkauan Area Tempat</label>
                                 <select name="radius" x-model="selectedRadius" :disabled="syncing" class="w-full px-4 py-3 rounded-2xl bg-slate-50 border border-slate-200 text-slate-900 text-xs sm:text-sm font-semibold focus:outline-none focus:border-emerald-600 focus:bg-white transition-all disabled:opacity-60">
                                     <option value="5000">5,000 meter (5 km - Area Pusat Kota)</option>
-                                    <option value="10000" selected>10,000 meter (10 km - Standar Perkotaan)</option>
-                                    <option value="15000">15,000 meter (15 km - Metropolitan)</option>
-                                    <option value="25000">25,000 meter (25 km - Karesidenan)</option>
+                                    <option value="10000" selected>10,000 meter (10 km - Area Kota Standard)</option>
+                                    <option value="15000">15,000 meter (15 km - Area Sekitar Kota)</option>
+                                    <option value="25000">25,000 meter (25 km - Area Wilayah Luas)</option>
                                 </select>
                             </div>
 
@@ -485,7 +485,7 @@
                                     :class="syncing ? 'bg-slate-400 cursor-not-allowed' : 'bg-emerald-600 hover:bg-emerald-700 cursor-pointer'"
                                     class="w-full py-3.5 px-4 rounded-2xl text-white font-bold text-xs sm:text-sm transition-all shadow-md shadow-emerald-600/20 flex items-center justify-center gap-2">
                                 <svg class="w-4 h-4 text-white" :class="{ 'animate-spin': syncing }" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
-                                <span x-text="syncing ? 'Memproses Sinkronisasi Data...' : 'Mulai Sinkronisasi Kota'"></span>
+                                <span x-text="syncing ? 'Sedang Memperbarui Data Tempat...' : 'Perbarui Data Kota Ini'"></span>
                             </button>
                         </div>
                     </form>
@@ -623,14 +623,14 @@
 
                     const city = this.citiesList.find(c => c.id == this.selectedCityId);
                     this.selectedSyncCityName = city ? `${city.name} (${city.province})` : 'Kota Target';
-                    this.syncStepText = `[1/3] Menghubungi Server OpenStreetMap Overpass API untuk ${this.selectedSyncCityName}...`;
+                    this.syncStepText = `[1/3] Menghubungi layanan peta publik untuk ${this.selectedSyncCityName}...`;
 
                     // Timed live progress messages
                     const t1 = setTimeout(() => {
-                        if (this.syncing) this.syncStepText = `[2/3] Mengirim query spasial & mencari mirror server Overpass aktif...`;
+                        if (this.syncing) this.syncStepText = `[2/3] Mencari lokasi taman dan fasilitas publik...`;
                     }, 1800);
                     const t2 = setTimeout(() => {
-                        if (this.syncing) this.syncStepText = `[3/3] Memproses data lokasi, koordinat presisi, dan skor hijau...`;
+                        if (this.syncing) this.syncStepText = `[3/3] Menyusun informasi tempat dan skor kebersihan...`;
                     }, 4500);
 
                     try {
@@ -659,22 +659,22 @@
                             }
 
                             if (data.status === 'partial' || (data.log && data.log.status === 'partial') || (data.message && data.message.includes('rate-limit'))) {
-                                this.syncError = data.message || 'Server OpenStreetMap Overpass sedang mengalami pembatasan kuota (rate-limit / sibuk). Mohon tunggu 15-30 detik sebelum memicu sinkronisasi kembali. Data lokasi lama di database tetap aman.';
+                                this.syncError = data.message || 'Layanan peta publik saat ini sedang cukup padat. Silakan tunggu 15-30 detik sebelum memperbarui kembali. Jangan khawatir, seluruh data lama Anda tetap aman.';
                                 this.startCooldown(25);
                             } else {
-                                this.syncStepText = '✅ Sinkronisasi Berhasil! Memuat ulang data lokasi...';
+                                this.syncStepText = '✅ Pembaruan Berhasil! Memuat ulang data tempat...';
                                 setTimeout(() => {
                                     window.location.reload();
                                 }, 1000);
                             }
                         } else {
                             const data = await res.json();
-                            this.syncError = data.message || 'Server OpenStreetMap Overpass sedang mengalami pembatasan kuota (rate-limit / sibuk). Mohon tunggu 15-30 detik sebelum memicu sinkronisasi kembali. Data lokasi lama di database tetap aman.';
+                            this.syncError = data.message || 'Layanan peta publik saat ini sedang cukup padat. Silakan tunggu 15-30 detik sebelum memperbarui kembali. Jangan khawatir, seluruh data lama Anda tetap aman.';
                             this.startCooldown(25);
                         }
                     } catch (e) {
                         console.error("Single sync error", e);
-                        this.syncError = 'Server OpenStreetMap Overpass sedang mengalami pembatasan kuota (rate-limit / sibuk). Mohon tunggu 15-30 detik sebelum memicu sinkronisasi kembali. Data lokasi lama di database tetap aman.';
+                        this.syncError = 'Layanan peta publik saat ini sedang cukup padat. Silakan tunggu 15-30 detik sebelum memperbarui kembali. Jangan khawatir, seluruh data lama Anda tetap aman.';
                         this.startCooldown(25);
                     } finally {
                         this.syncing = false;

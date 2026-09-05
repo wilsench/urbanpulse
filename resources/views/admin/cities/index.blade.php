@@ -1,24 +1,24 @@
-<x-layouts.admin title="Kelola Kota — UrbanPulse CMS">
+<x-layouts.admin title="Kelola Kota — UrbanPulse">
     <div class="space-y-6">
 
         <!-- Header Bar -->
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-200/80">
             <div>
                 <div class="flex items-center gap-2 mb-1">
-                    <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800 uppercase tracking-wider">CMS SYSTEM</span>
-                    <span class="text-xs text-slate-500 font-medium">&bull; Manajemen Wilayah & Kota</span>
+                    <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800 uppercase tracking-wider">PANGKALAN DATA</span>
+                    <span class="text-xs text-slate-500 font-medium">&bull; Wilayah & Kota Indonesia</span>
                 </div>
-                <h1 class="text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight">Manajemen Kota Indonesia</h1>
-                <p class="text-slate-600 text-xs sm:text-sm mt-1">Kelola data kota terverifikasi, koordinat presisi, serta status keaktifan di platform UrbanPulse.</p>
+                <h1 class="text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight">Kelola Kota Indonesia</h1>
+                <p class="text-slate-600 text-xs sm:text-sm mt-1">Kelola data kota, lokasi geografis, serta status keaktifan layanan di UrbanPulse.</p>
             </div>
 
             <div class="flex flex-wrap items-center gap-2.5">
                 <!-- Sync Indonesia API Button -->
-                <form method="POST" action="{{ route('admin.cities.sync-indonesia') }}" onsubmit="event.preventDefault(); confirmAction({ title: 'Sinkronisasi Kota Indonesia', message: 'Apakah Anda yakin ingin menyinkronkan data kota utama di Indonesia secara otomatis?', confirmText: 'Ya, Sinkronkan', variant: 'emerald', onConfirm: () => this.submit() }); return false;">
+                <form method="POST" action="{{ route('admin.cities.sync-indonesia') }}" onsubmit="event.preventDefault(); confirmAction({ title: 'Perbarui Daftar Kota', message: 'Apakah Anda ingin memperbarui daftar kota utama di Indonesia secara otomatis?', confirmText: 'Ya, Perbarui', variant: 'emerald', onConfirm: () => this.submit() }); return false;">
                     @csrf
                     <button type="submit" class="px-3.5 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-xs transition-all flex items-center gap-1.5 cursor-pointer shadow-xs border border-slate-200">
                         <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
-                        <span>Sync Kota Indonesia (API)</span>
+                        <span>Perbarui Daftar Kota</span>
                     </button>
                 </form>
 
@@ -37,7 +37,7 @@
                 <div class="text-2xl font-extrabold text-slate-900">{{ $totalCities }} <span class="text-xs font-normal text-slate-500">Kota</span></div>
             </div>
             <div class="p-5 rounded-2xl bg-white border border-slate-200/80 shadow-xs space-y-1">
-                <span class="text-xs font-bold text-emerald-700 uppercase tracking-wider">KOTA AKTIF SERVIS</span>
+                <span class="text-xs font-bold text-emerald-700 uppercase tracking-wider">KOTA AKTIF</span>
                 <div class="text-2xl font-extrabold text-emerald-700">{{ $activeCities }} <span class="text-xs font-normal text-emerald-600">Aktif</span></div>
             </div>
             <div class="p-5 rounded-2xl bg-white border border-slate-200/80 shadow-xs space-y-1">

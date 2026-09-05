@@ -24,7 +24,7 @@
         <div class="max-w-7xl mx-auto flex justify-between items-center gap-2">
             <div class="flex items-center gap-2">
                 <span class="bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 px-2 py-0.5 rounded font-mono font-semibold text-[10px] tracking-wider uppercase">ADMIN</span>
-                <span class="hidden sm:inline text-slate-400 font-medium">Control Center Kota Bogor</span>
+                <span class="hidden sm:inline text-slate-400 font-medium">Control Center</span>
             </div>
             <a href="{{ route('landing') }}" class="hover:text-emerald-400 flex items-center gap-1.5 text-slate-300 text-xs font-medium transition-colors">
                 <span>Website Publik</span>
@@ -56,26 +56,26 @@
     </div>
 
     <!-- Mobile Slide-Over Drawer Overlay & Sidebar -->
-    <div x-show="mobileSidebarOpen" 
-         x-transition:enter="transition opacity ease-out duration-200" 
-         x-transition:enter-start="opacity-0" 
-         x-transition:enter-end="opacity-100" 
-         x-transition:leave="transition opacity ease-in duration-150" 
-         x-transition:leave-start="opacity-100" 
-         x-transition:leave-end="opacity-0" 
-         class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 md:hidden" 
-         @click="mobileSidebarOpen = false" 
+    <div x-show="mobileSidebarOpen"
+         x-transition:enter="transition opacity ease-out duration-200"
+         x-transition:enter-start="opacity-0"
+         x-transition:enter-end="opacity-100"
+         x-transition:leave="transition opacity ease-in duration-150"
+         x-transition:leave-start="opacity-100"
+         x-transition:leave-end="opacity-0"
+         class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 md:hidden"
+         @click="mobileSidebarOpen = false"
          x-cloak>
     </div>
 
-    <aside x-show="mobileSidebarOpen" 
-           x-transition:enter="transition transform ease-out duration-300" 
-           x-transition:enter-start="-translate-x-full" 
-           x-transition:enter-end="translate-x-0" 
-           x-transition:leave="transition transform ease-in duration-200" 
-           x-transition:leave-start="translate-x-0" 
-           x-transition:leave-end="-translate-x-full" 
-           class="fixed inset-y-0 left-0 w-72 max-w-[85vw] bg-white z-50 p-5 flex flex-col justify-between shadow-xl md:hidden overflow-y-auto" 
+    <aside x-show="mobileSidebarOpen"
+           x-transition:enter="transition transform ease-out duration-300"
+           x-transition:enter-start="-translate-x-full"
+           x-transition:enter-end="translate-x-0"
+           x-transition:leave="transition transform ease-in duration-200"
+           x-transition:leave-start="translate-x-0"
+           x-transition:leave-end="-translate-x-full"
+           class="fixed inset-y-0 left-0 w-72 max-w-[85vw] bg-white z-50 p-5 flex flex-col justify-between shadow-xl md:hidden overflow-y-auto"
            x-cloak>
         <div>
             <!-- Header inside Drawer -->
@@ -94,36 +94,36 @@
 
             <!-- Navigation Links -->
             <nav class="space-y-1 text-xs font-semibold">
-                <a href="{{ route('admin.dashboard') }}" 
-                   @click="mobileSidebarOpen = false" 
+                <a href="{{ route('admin.dashboard') }}"
+                   @click="mobileSidebarOpen = false"
                    class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl transition-all min-h-[44px] {{ request()->routeIs('admin.dashboard') ? 'bg-emerald-50 text-emerald-800 font-bold border-l-2 border-emerald-600' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900' }}">
                     <svg class="w-4 h-4 shrink-0 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z"></path></svg>
                     <span>Dashboard Overview</span>
                 </a>
 
-                <a href="{{ route('admin.cities.index') }}" 
-                   @click="mobileSidebarOpen = false" 
+                <a href="{{ route('admin.cities.index') }}"
+                   @click="mobileSidebarOpen = false"
                    class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl transition-all min-h-[44px] {{ request()->routeIs('admin.cities.*') ? 'bg-emerald-50 text-emerald-800 font-bold border-l-2 border-emerald-600' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900' }}">
                     <svg class="w-4 h-4 shrink-0 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5m3 0h1m-1-4h.01M9 16h.01M9 12h.01M9 8h.01M15 16h.01M15 12h.01M15 8h.01"></path></svg>
                     <span>Kelola Kota</span>
                 </a>
 
-                <a href="{{ route('admin.locations.index') }}" 
-                   @click="mobileSidebarOpen = false" 
+                <a href="{{ route('admin.locations.index') }}"
+                   @click="mobileSidebarOpen = false"
                    class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl transition-all min-h-[44px] {{ request()->routeIs('admin.locations.*') ? 'bg-emerald-50 text-emerald-800 font-bold border-l-2 border-emerald-600' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900' }}">
                     <svg class="w-4 h-4 shrink-0 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
                     <span>Kelola Lokasi</span>
                 </a>
 
-                <a href="{{ route('admin.environment.index') }}" 
-                   @click="mobileSidebarOpen = false" 
+                <a href="{{ route('admin.environment.index') }}"
+                   @click="mobileSidebarOpen = false"
                    class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl transition-all min-h-[44px] {{ request()->routeIs('admin.environment.*') ? 'bg-emerald-50 text-emerald-800 font-bold border-l-2 border-emerald-600' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900' }}">
                     <svg class="w-4 h-4 shrink-0 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
                     <span>Data Lingkungan & API</span>
                 </a>
 
-                <a href="{{ route('admin.users.index') }}" 
-                   @click="mobileSidebarOpen = false" 
+                <a href="{{ route('admin.users.index') }}"
+                   @click="mobileSidebarOpen = false"
                    class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl transition-all min-h-[44px] {{ request()->routeIs('admin.users.*') ? 'bg-emerald-50 text-emerald-800 font-bold border-l-2 border-emerald-600' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900' }}">
                     <svg class="w-4 h-4 shrink-0 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
                     <span>Manajemen Pengguna</span>
@@ -166,31 +166,31 @@
                 </a>
 
                 <nav class="space-y-1 text-xs font-semibold">
-                    <a href="{{ route('admin.dashboard') }}" 
+                    <a href="{{ route('admin.dashboard') }}"
                        class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl transition-all min-h-[40px] {{ request()->routeIs('admin.dashboard') ? 'bg-emerald-50 text-emerald-800 font-bold border-l-2 border-emerald-600' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900' }}">
                         <svg class="w-4 h-4 shrink-0 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z"></path></svg>
                         <span>Dashboard Overview</span>
                     </a>
 
-                    <a href="{{ route('admin.cities.index') }}" 
+                    <a href="{{ route('admin.cities.index') }}"
                        class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl transition-all min-h-[40px] {{ request()->routeIs('admin.cities.*') ? 'bg-emerald-50 text-emerald-800 font-bold border-l-2 border-emerald-600' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900' }}">
                         <svg class="w-4 h-4 shrink-0 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5m3 0h1m-1-4h.01M9 16h.01M9 12h.01M9 8h.01M15 16h.01M15 12h.01M15 8h.01"></path></svg>
                         <span>Kelola Kota</span>
                     </a>
 
-                    <a href="{{ route('admin.locations.index') }}" 
+                    <a href="{{ route('admin.locations.index') }}"
                        class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl transition-all min-h-[40px] {{ request()->routeIs('admin.locations.*') ? 'bg-emerald-50 text-emerald-800 font-bold border-l-2 border-emerald-600' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900' }}">
                         <svg class="w-4 h-4 shrink-0 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
                         <span>Kelola Lokasi</span>
                     </a>
 
-                    <a href="{{ route('admin.environment.index') }}" 
+                    <a href="{{ route('admin.environment.index') }}"
                        class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl transition-all min-h-[40px] {{ request()->routeIs('admin.environment.*') ? 'bg-emerald-50 text-emerald-800 font-bold border-l-2 border-emerald-600' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900' }}">
                         <svg class="w-4 h-4 shrink-0 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
                         <span>Data Lingkungan & API</span>
                     </a>
 
-                    <a href="{{ route('admin.users.index') }}" 
+                    <a href="{{ route('admin.users.index') }}"
                        class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl transition-all min-h-[40px] {{ request()->routeIs('admin.users.*') ? 'bg-emerald-50 text-emerald-800 font-bold border-l-2 border-emerald-600' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900' }}">
                         <svg class="w-4 h-4 shrink-0 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
                         <span>Manajemen Pengguna</span>
