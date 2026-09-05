@@ -1,0 +1,97 @@
+@import 'tailwindcss';
+@import 'leaflet/dist/leaflet.css';
+
+@theme {
+    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+    --color-emerald-600: #059669;
+    --color-emerald-500: #10b981;
+    --color-emerald-100: #d1fae5;
+    --color-emerald-50: #ecfdf5;
+}
+
+/* Accessibility: Root Font Size Scaling for rem-based Tailwind utilities */
+html.text-size-base {
+    font-size: 100% !important; /* Standard 16px base */
+}
+
+html.text-size-lg {
+    font-size: 112.5% !important; /* 18px base - scales ALL rem text by +12.5% */
+}
+
+html.text-size-xl {
+    font-size: 125% !important; /* 20px base - scales ALL rem text by +25% */
+}
+
+body {
+    background-color: #f8fafc;
+    color: #0f172a;
+    font-family: var(--font-sans);
+    line-height: 1.6;
+    transition: font-size 0.15s ease-in-out;
+}
+
+/* Accessibility: High Contrast Mode */
+html.high-contrast body {
+    background-color: #ffffff !important;
+    color: #000000 !important;
+}
+
+html.high-contrast .bg-white,
+html.high-contrast .bg-slate-50,
+html.high-contrast .bg-slate-100,
+html.high-contrast .bg-slate-900 {
+    background-color: #ffffff !important;
+    color: #000000 !important;
+    border-color: #000000 !important;
+}
+
+html.high-contrast a,
+html.high-contrast button,
+html.high-contrast input,
+html.high-contrast select {
+    color: #000000 !important;
+    font-weight: 700 !important;
+    border-color: #000000 !important;
+}
+
+/* Custom Scrollbar for clean light mode */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+::-webkit-scrollbar-track {
+    background: #f1f5f9;
+}
+::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+}
+
+/* Leaflet Map clean light styling */
+.leaflet-container {
+    background: #f8fafc !important;
+    font-family: var(--font-sans) !important;
+}
+
+.leaflet-popup-content-wrapper {
+    background-color: #ffffff !important;
+    color: #0f172a !important;
+    border: 1px solid #e2e8f0 !important;
+    border-radius: 1rem !important;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1) !important;
+    padding: 4px !important;
+}
+
+.leaflet-popup-tip {
+    background-color: #ffffff !important;
+    border: 1px solid #e2e8f0 !important;
+}
+
+/* Focus Outline for Accessibility */
+a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible {
+    outline: 3px solid #059669 !important;
+    outline-offset: 2px !important;
+}
