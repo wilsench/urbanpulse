@@ -13,20 +13,36 @@ use Illuminate\Support\Str;
 
 class AdminLocationController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
+        $selectedCityId = $request->query('city_id');
+        $search = $request->query('search', '');
+
         $activeCity = view()->shared('activeCity');
-        $cities = City::where('is_active', true)->get();
+        $cities = City::where('is_active', true)->orderBy('name', 'asc')->get();
 
         $query = Location::with('city');
-        if ($activeCity) {
+
+        if ($selectedCityId === 'all') {
+            // Show all cities
+        } elseif (!empty($selectedCityId)) {
+            $query->where('city_id', $selectedCityId);
+        } elseif ($activeCity && !$request->has('city_id')) {
             $query->where('city_id', $activeCity->id);
+        }
+
+        if (!empty($search)) {
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'LIKE', "%{$search}%")
+                  ->orWhere('address', 'LIKE', "%{$search}%")
+                  ->orWhere('category', 'LIKE', "%{$search}%");
+            });
         }
 
         $locations = $query->latest()->paginate(15);
         $syncLogs = LocationSyncLog::with('city')->latest()->take(5)->get();
 
-        return view('admin.locations.index', compact('locations', 'cities', 'activeCity', 'syncLogs'));
+        return view('admin.locations.index', compact('locations', 'cities', 'activeCity', 'syncLogs', 'selectedCityId', 'search'));
     }
 
     public function syncLocations(Request $request, LocationSyncService $syncService)
@@ -77,6 +93,40 @@ class AdminLocationController extends Controller
         } else {
             return redirect()->route('admin.locations.index')->with('error', 'Sinkronisasi tidak dapat dilakukan saat ini. Data lokasi lama tetap tersedia.');
         }
+    }
+
+    public function syncAllCities(Request $request, LocationSyncService $syncService)
+    {
+        $radius = (int) $request->input('radius', 10000);
+        $activeCities = City::where('is_active', true)->get();
+
+        $totalDiscovered = 0;
+        $totalCreated = 0;
+        $totalUpdated = 0;
+        $syncedCities = 0;
+
+        foreach ($activeCities as $city) {
+            $syncLog = LocationSyncLog::create([
+                'city_id' => $city->id,
+                'provider' => 'openstreetmap',
+                'search_radius' => $radius,
+                'status' => 'running',
+                'started_at' => now(),
+            ]);
+
+            $syncService->syncCityLocations($city, $radius, $syncLog->id);
+            $syncLog->refresh();
+
+            if ($syncLog->status === 'success') {
+                $totalDiscovered += $syncLog->discovered_count;
+                $totalCreated += $syncLog->created_count;
+                $totalUpdated += $syncLog->updated_count;
+                $syncedCities++;
+            }
+        }
+
+        $msg = "Sinkronisasi massal seluruh kota selesai ({$syncedCities} kota aktif)! Total Ditemukan: {$totalDiscovered}, Baru: +{$totalCreated}, Diperbarui: {$totalUpdated}.";
+        return redirect()->route('admin.locations.index')->with('success', $msg);
     }
 
     public function syncStatus()

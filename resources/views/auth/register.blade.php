@@ -2,7 +2,7 @@
     <div class="max-w-md mx-auto px-4 py-16">
         <div class="bg-white border border-slate-200 rounded-3xl p-8 shadow-sm space-y-6">
             <div class="text-center">
-                <div class="w-12 h-12 rounded-2xl bg-emerald-600 text-white font-bold text-2xl mx-auto flex items-center justify-center mb-3 shadow-md shadow-emerald-600/20">🌱</div>
+                <x-logo size="lg" class="mx-auto mb-3" />
                 <h1 class="text-2xl font-bold text-slate-900">Daftar Akun UrbanPulse</h1>
                 <p class="text-sm text-slate-600 mt-1">Dapatkan 50 Poin Hijau bonus pendaftaran awal.</p>
             </div>

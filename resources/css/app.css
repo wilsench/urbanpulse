@@ -30,28 +30,151 @@ body {
     transition: font-size 0.15s ease-in-out;
 }
 
-/* Accessibility: High Contrast Mode */
+/* -------------------------------------------------------------
+ * Accessibility: High Contrast Mode (WCAG AAA Compliant)
+ * ------------------------------------------------------------- */
+html.high-contrast {
+    filter: contrast(115%);
+}
+
 html.high-contrast body {
     background-color: #ffffff !important;
     color: #000000 !important;
 }
 
+/* Light Containers (Cards, Modals, Tables, Footer, Main Body Content) */
 html.high-contrast .bg-white,
-html.high-contrast .bg-slate-50,
-html.high-contrast .bg-slate-100,
-html.high-contrast .bg-slate-900 {
+html.high-contrast main,
+html.high-contrast footer,
+html.high-contrast .modal-container {
     background-color: #ffffff !important;
     color: #000000 !important;
     border-color: #000000 !important;
 }
 
-html.high-contrast a,
-html.high-contrast button,
-html.high-contrast input,
-html.high-contrast select {
+/* Text in Light Containers */
+html.high-contrast main *,
+html.high-contrast footer * {
+    color: #000000 !important;
+}
+
+/* Top Utility Bar Above Navbar (Always High Contrast Pure Black & White) */
+html.high-contrast .top-utility-bar,
+html.high-contrast .top-utility-bar * {
+    background-color: #000000 !important;
+    color: #ffffff !important;
+    border-color: #ffffff !important;
+}
+
+html.high-contrast .top-utility-bar button,
+html.high-contrast .top-utility-bar a {
+    border: 2px solid #ffffff !important;
+    color: #ffffff !important;
+    background-color: #000000 !important;
+    font-weight: 700 !important;
+}
+
+html.high-contrast .top-utility-bar span,
+html.high-contrast .top-utility-bar p,
+html.high-contrast .top-utility-bar div {
+    color: #ffffff !important;
+}
+
+html.high-contrast .top-utility-bar svg {
+    color: #ffffff !important;
+    stroke: #ffffff !important;
+}
+
+/* Dark Sections & Dark Containers ONLY (Hero Section, Dark Cards, CMS Admin Dark Headers) */
+html.high-contrast section.bg-gradient-to-b,
+html.high-contrast section.bg-slate-900,
+html.high-contrast .bg-slate-800,
+html.high-contrast .bg-slate-900,
+html.high-contrast .bg-slate-950,
+html.high-contrast .bg-emerald-900,
+html.high-contrast .bg-emerald-950 {
+    background: #000000 !important;
+    background-color: #000000 !important;
+    color: #ffffff !important;
+    border-color: #ffffff !important;
+}
+
+/* Force all text/links/buttons inside DARK containers to remain pure WHITE (#ffffff) */
+html.high-contrast section.bg-gradient-to-b *,
+html.high-contrast section.bg-slate-900 *,
+html.high-contrast .bg-slate-800 *,
+html.high-contrast .bg-slate-900 *,
+html.high-contrast .bg-slate-950 *,
+html.high-contrast .bg-emerald-900 *,
+html.high-contrast .bg-emerald-950 * {
+    color: #ffffff !important;
+}
+
+/* Links inside Light Containers (Footer, Main Content) */
+html.high-contrast main a,
+html.high-contrast footer a {
     color: #000000 !important;
     font-weight: 700 !important;
-    border-color: #000000 !important;
+    text-decoration: underline !important;
+}
+
+html.high-contrast main a:hover,
+html.high-contrast footer a:hover {
+    color: #047857 !important;
+}
+
+/* Gradient clip text (Headline text) fix */
+html.high-contrast .bg-clip-text {
+    background: none !important;
+    -webkit-background-clip: unset !important;
+    background-clip: unset !important;
+    -webkit-text-fill-color: #34d399 !important;
+    color: #34d399 !important;
+    font-weight: 800 !important;
+}
+
+/* Dark Container Buttons */
+html.high-contrast section button,
+html.high-contrast .bg-slate-800 button,
+html.high-contrast .bg-slate-900 button,
+html.high-contrast .bg-slate-950 button {
+    border: 2px solid #ffffff !important;
+    color: #ffffff !important;
+    background-color: #000000 !important;
+}
+
+/* Light Container Buttons */
+html.high-contrast main button,
+html.high-contrast footer button {
+    border: 2px solid #000000 !important;
+    color: #000000 !important;
+    background-color: #ffffff !important;
+}
+
+html.high-contrast .bg-emerald-500,
+html.high-contrast .bg-emerald-600 {
+    background-color: #047857 !important;
+    color: #ffffff !important;
+    border: 2px solid #000000 !important;
+}
+
+/* Form Inputs, Selects, and Textareas */
+html.high-contrast input,
+html.high-contrast select,
+html.high-contrast textarea {
+    background-color: #ffffff !important;
+    color: #000000 !important;
+    border: 2px solid #000000 !important;
+    font-weight: 700 !important;
+}
+
+html.high-contrast .bg-slate-900 input,
+html.high-contrast .bg-slate-900 select,
+html.high-contrast .bg-slate-950 input,
+html.high-contrast .bg-slate-950 select {
+    background-color: #000000 !important;
+    color: #ffffff !important;
+    border: 2px solid #ffffff !important;
 }
 
 /* Custom Scrollbar for clean light mode */
