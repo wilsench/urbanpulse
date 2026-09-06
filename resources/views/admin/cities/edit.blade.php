@@ -29,7 +29,7 @@
                                value="{{ old('name', $city->name) }}" 
                                required 
                                class="w-full px-4 py-3 rounded-2xl bg-slate-50 border border-slate-200 text-slate-900 text-xs sm:text-sm focus:outline-none focus:border-emerald-600 focus:bg-white transition-all">
-                        @error('name') <p class="text-xs text-rose-600 font-semibold">{{ $message }}</p> @errorEnd
+                        @error('name') <p class="text-xs text-rose-600 font-semibold">{{ $message }}</p> @enderror
                     </div>
 
                     <!-- Province -->
@@ -39,7 +39,7 @@
                                name="province" 
                                value="{{ old('province', $city->province) }}" 
                                class="w-full px-4 py-3 rounded-2xl bg-slate-50 border border-slate-200 text-slate-900 text-xs sm:text-sm focus:outline-none focus:border-emerald-600 focus:bg-white transition-all">
-                        @error('province') <p class="text-xs text-rose-600 font-semibold">{{ $message }}</p> @errorEnd
+                        @error('province') <p class="text-xs text-rose-600 font-semibold">{{ $message }}</p> @enderror
                     </div>
                 </div>
 
@@ -52,7 +52,7 @@
                                value="{{ old('country', $city->country) }}" 
                                required 
                                class="w-full px-4 py-3 rounded-2xl bg-slate-50 border border-slate-200 text-slate-900 text-xs sm:text-sm focus:outline-none focus:border-emerald-600 focus:bg-white transition-all">
-                        @error('country') <p class="text-xs text-rose-600 font-semibold">{{ $message }}</p> @errorEnd
+                        @error('country') <p class="text-xs text-rose-600 font-semibold">{{ $message }}</p> @enderror
                     </div>
 
                     <!-- Latitude -->
@@ -64,7 +64,7 @@
                                value="{{ old('latitude', $city->latitude) }}" 
                                required 
                                class="w-full px-4 py-3 rounded-2xl bg-slate-50 border border-slate-200 text-slate-900 font-mono text-xs sm:text-sm focus:outline-none focus:border-emerald-600 focus:bg-white transition-all">
-                        @error('latitude') <p class="text-xs text-rose-600 font-semibold">{{ $message }}</p> @errorEnd
+                        @error('latitude') <p class="text-xs text-rose-600 font-semibold">{{ $message }}</p> @enderror
                     </div>
 
                     <!-- Longitude -->
@@ -76,7 +76,7 @@
                                value="{{ old('longitude', $city->longitude) }}" 
                                required 
                                class="w-full px-4 py-3 rounded-2xl bg-slate-50 border border-slate-200 text-slate-900 font-mono text-xs sm:text-sm focus:outline-none focus:border-emerald-600 focus:bg-white transition-all">
-                        @error('longitude') <p class="text-xs text-rose-600 font-semibold">{{ $message }}</p> @errorEnd
+                        @error('longitude') <p class="text-xs text-rose-600 font-semibold">{{ $message }}</p> @enderror
                     </div>
                 </div>
 
@@ -89,7 +89,7 @@
                             <option value="Asia/Makassar" {{ old('timezone', $city->timezone) === 'Asia/Makassar' ? 'selected' : '' }}>WITA (Asia/Makassar)</option>
                             <option value="Asia/Jayapura" {{ old('timezone', $city->timezone) === 'Asia/Jayapura' ? 'selected' : '' }}>WIT (Asia/Jayapura)</option>
                         </select>
-                        @error('timezone') <p class="text-xs text-rose-600 font-semibold">{{ $message }}</p> @errorEnd
+                        @error('timezone') <p class="text-xs text-rose-600 font-semibold">{{ $message }}</p> @enderror
                     </div>
 
                     <!-- Active Toggle -->
@@ -108,7 +108,7 @@
                     <textarea name="description" 
                               rows="3" 
                               class="w-full px-4 py-3 rounded-2xl bg-slate-50 border border-slate-200 text-slate-900 text-xs sm:text-sm focus:outline-none focus:border-emerald-600 focus:bg-white transition-all">{{ old('description', $city->description) }}</textarea>
-                    @error('description') <p class="text-xs text-rose-600 font-semibold">{{ $message }}</p> @errorEnd
+                    @error('description') <p class="text-xs text-rose-600 font-semibold">{{ $message }}</p> @enderror
                 </div>
 
                 <!-- Form Submit Actions -->
