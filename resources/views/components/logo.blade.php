@@ -16,12 +16,12 @@
 @endphp
 
 @if($variant === 'transparent')
-    <img src="{{ asset('images/logo-transparent.png') }}"
+    <img src="{{ asset('images/logourban.png') }}"
          alt="UrbanPulse Logo"
          {{ $attributes->merge(['class' => 'shrink-0 object-contain ' . $containerClass]) }} />
 @else
     <div {{ $attributes->merge(['class' => 'relative flex items-center justify-center bg-white shrink-0 overflow-hidden group-hover:scale-105 transition-transform duration-200 p-0.5 ' . $containerClass]) }}>
-        <img src="{{ asset('images/logo.png') }}"
+        <img src="{{ asset('images/logourban.png') }}"
              alt="UrbanPulse Logo"
              class="w-full h-full object-cover rounded-[inherit]" />
     </div>

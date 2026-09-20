@@ -10,19 +10,18 @@
         .glow-avatar { box-shadow: 0 0 15px rgba(16, 185, 129, 0.4); }
     </style>
 
-    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-10 space-y-6" x-data="aiAssistant()">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 space-y-6" x-data="aiAssistant()">
 
-        <!-- Header Bar -->
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-slate-200/80">
+        <!-- Page Header (mengikuti pola baku: judul + sub-label + border-bottom, full width) -->
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-slate-200">
             <div>
-                <div class="flex items-center gap-2 mb-1">
-                    <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                    <span class="text-xs font-bold text-emerald-700 uppercase tracking-wider">AI ASSISTANT REAL-TIME</span>
-                </div>
-                <h1 class="text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight">Tanya UrbanPulse ({{ $activeCity->name ?? 'Kota Anda' }})</h1>
-                <p class="text-slate-600 text-xs sm:text-base mt-1">Ajukan pertanyaan tentang rekomendasi tempat, prakiraan cuaca BMKG, hingga indeks kualitas udara.</p>
+                <h1 class="text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight">Tanya UrbanPulse</h1>
+                <p class="text-slate-500 text-xs sm:text-sm mt-1 flex items-center gap-2">
+                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                    <span>Terhubung real-time ke data BMKG & AQI &bull; {{ $activeCity->name ?? 'Kota Anda' }}</span>
+                </p>
             </div>
-            
+
             <div class="flex items-center gap-3 self-start sm:self-auto">
                 <button type="button" @click="clearChat()" x-show="messages.length > 0" x-transition class="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition-all flex items-center gap-1.5">
                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
@@ -35,7 +34,9 @@
             </div>
         </div>
 
-        <!-- Chat Container Card -->
+        <!-- Chat Container Card: dibatasi max-w-4xl & dicenter agar area chat tidak terlalu lebar,
+             sementara wrapper terluar & page header tetap max-w-7xl selaras halaman lain -->
+        <div class="max-w-4xl mx-auto">
         <div class="bg-white border border-slate-200/80 rounded-3xl overflow-hidden shadow-lg flex flex-col h-[520px] sm:h-[620px] relative">
             
             <!-- Messages Stream Area -->
@@ -149,6 +150,7 @@
                 </form>
             </div>
 
+        </div>
         </div>
 
     </div>

@@ -1,10 +1,22 @@
 <x-layouts.app title="UrbanPulse — Asisten Keputusan Kota Berkelanjutan">
-    
-    <!-- HERO SECTION: INTERACTIVE & PROFESSIONAL DESIGN -->
-    <section class="relative bg-gradient-to-b from-slate-900 via-slate-900 to-slate-950 text-white overflow-hidden py-12 sm:py-16 lg:py-24 border-b border-slate-800">
-        <!-- Subtle Glow Elements -->
-        <div class="absolute top-0 left-1/4 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none"></div>
-        <div class="absolute bottom-0 right-10 w-96 h-96 bg-emerald-600/10 rounded-full blur-3xl pointer-events-none"></div>
+
+    {{-- 
+        Font display untuk headline. Kalau project sudah punya font loader sendiri 
+        di layout utama, style block ini bisa dipindah ke sana / dihapus dan cukup 
+        tambahkan class font-display ke tailwind.config.js.
+    --}}
+    <style>
+        @import url('https://api.fontshare.com/v2/css?f[]=general-sans@600,500,700&display=swap');
+        .font-display { font-family: 'General Sans', ui-sans-serif, system-ui, sans-serif; }
+    </style>
+
+    <!-- HERO SECTION -->
+    <section class="relative bg-slate-950 text-white overflow-hidden py-12 sm:py-16 lg:py-24 border-b border-slate-800">
+        <!-- City Grid Background Pattern -->
+        <div class="absolute inset-0 opacity-10 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px]"></div>
+        <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/80 to-transparent pointer-events-none"></div>
+        <!-- Single deliberate accent glow behind the headline only -->
+        <div class="absolute -top-24 left-1/3 w-[420px] h-[420px] bg-emerald-400/10 rounded-full blur-[100px] pointer-events-none"></div>
 
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10" x-data="{ 
             heroTab: 'finder', 
@@ -19,192 +31,219 @@
             }
         }">
             
-            <div class="grid lg:grid-cols-12 gap-8 lg:gap-12 items-center">
+            <div class="grid lg:grid-cols-12 gap-10 lg:gap-16 items-center">
                 
-                <!-- Left Column: Content & Interactive Quick Presets -->
-                <div class="lg:col-span-7 space-y-6 sm:space-y-8 text-center lg:text-left">
+                <!-- Left Column -->
+                <div class="lg:col-span-7 space-y-7 sm:space-y-9 text-center lg:text-left">
                     
-                    <!-- Live City Indicator Badge -->
-                    <div class="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-full bg-slate-800/80 border border-slate-700/80 text-xs text-slate-300 shadow-xs">
-                        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                        <span>Lokasi Aktif: <strong class="text-emerald-400 font-bold">{{ $activeCity->name ?? 'Kota Bogor' }}</strong></span>
-                        <span class="text-slate-600">|</span>
+                    <!-- Live City Indicator -->
+                    <div class="inline-flex items-center gap-2.5 px-3 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-xs text-slate-300">
+                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                        <span class="font-medium">Lagi mantau: <span class="text-emerald-400 font-semibold">{{ $activeCity->name ?? 'Kota Bogor' }}</span></span>
+                        <span class="text-slate-700">|</span>
                         <span class="text-slate-400 font-mono">{{ $weather['temperature'] ?? 27.5 }}°C &bull; {{ $airQuality['air_quality_status'] ?? 'Udara Baik' }}</span>
                     </div>
 
                     <!-- Main Headline -->
-                    <h1 class="text-3xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-white leading-tight">
-                        Cari Tempat Terbaik.<br>
-                        <span class="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-teal-300 to-emerald-500">
-                            Keputusan Kota Berkelanjutan.
+                    <h1 class="font-display text-4xl sm:text-5xl lg:text-6xl font-medium tracking-tight text-white leading-[1.05]">
+                        Kotamu, versi
+                        <span class="relative inline-block">
+                            <span class="relative z-10">paling adem.</span>
+                            <span class="absolute left-0 right-0 bottom-1 h-3 bg-emerald-500/30 -z-0"></span>
                         </span>
                     </h1>
 
-                    <p class="text-slate-300 text-base sm:text-lg leading-relaxed font-normal max-w-2xl mx-auto lg:mx-0">
-                        UrbanPulse merekomendasikan taman, fasilitas publik, dan waktu aktivitas optimal berdasarkan data cuaca BMKG, kualitas udara, dan tingkat keramaian real-time.
+                    <p class="text-slate-400 text-base sm:text-lg leading-relaxed max-w-2xl mx-auto lg:mx-0">
+                        Males olahraga di tempat yang polusinya parah, atau nongkrong di taman yang penuh sesak? UrbanPulse kasih tau tempat yang pas — udara, cuaca, sama keramaiannya udah dicek dulu buat kamu.
                     </p>
 
                     <!-- Interactive Preset Quick Chips -->
-                    <div class="pt-2 space-y-2">
-                        <div class="text-xs font-semibold uppercase tracking-wider text-slate-400">⚡ Rencana Cepat Populer:</div>
-                        <div class="flex flex-wrap items-center justify-center lg:justify-start gap-2">
-                            <button type="button" @click="setPreset('exercise', 'morning', 'air_quality')" class="px-3 py-1.5 rounded-xl bg-slate-800/90 hover:bg-emerald-950/60 hover:text-emerald-300 border border-slate-700/80 text-xs text-slate-300 transition-all inline-flex items-center gap-1.5">
-                                <span>🏃</span> Jogging Pagi Udara Bersih
+                    <div class="pt-1 space-y-3">
+                        <div class="text-sm font-medium text-slate-500">Pilih vibe hari ini:</div>
+                        <div class="flex flex-wrap items-center justify-center lg:justify-start gap-2.5">
+                            <button type="button" @click="setPreset('exercise', 'morning', 'air_quality')" class="group px-3.5 py-2 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-800 hover:border-emerald-500/50 text-xs text-slate-300 transition-all inline-flex items-center gap-2 hover:-translate-y-0.5">
+                                <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                                Jogging Udara Bersih
                             </button>
-                            <button type="button" @click="setPreset('relax', 'afternoon', 'crowd')" class="px-3 py-1.5 rounded-xl bg-slate-800/90 hover:bg-emerald-950/60 hover:text-emerald-300 border border-slate-700/80 text-xs text-slate-300 transition-all inline-flex items-center gap-1.5">
-                                <span>🧘</span> Santai Sore Tenang
+                            <button type="button" @click="setPreset('relax', 'afternoon', 'crowd')" class="group px-3.5 py-2 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-800 hover:border-emerald-500/50 text-xs text-slate-300 transition-all inline-flex items-center gap-2 hover:-translate-y-0.5">
+                                <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"></path></svg>
+                                Me Time Sore
                             </button>
-                            <button type="button" @click="setPreset('cycling', 'morning', 'access')" class="px-3 py-1.5 rounded-xl bg-slate-800/90 hover:bg-emerald-950/60 hover:text-emerald-300 border border-slate-700/80 text-xs text-slate-300 transition-all inline-flex items-center gap-1.5">
-                                <span>🚲</span> Rute Sepeda Pagi
+                            <button type="button" @click="setPreset('cycling', 'morning', 'access')" class="group px-3.5 py-2 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-800 hover:border-emerald-500/50 text-xs text-slate-300 transition-all inline-flex items-center gap-2 hover:-translate-y-0.5">
+                                <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                                Gowes Pagi
                             </button>
                         </div>
                     </div>
 
                     <!-- Direct Action Buttons -->
-                    <div class="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-3 sm:gap-4 pt-2">
-                        <a href="#interactive-finder" @click="heroTab = 'finder'" class="w-full sm:w-auto px-6 py-3.5 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-bold text-sm sm:text-base transition-all shadow-lg shadow-emerald-500/20 flex items-center justify-center gap-2 min-h-[48px]">
-                            <span>Cari Tempat Sekarang</span>
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                    <div class="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-3 sm:gap-4 pt-4">
+                        <a href="#interactive-finder" @click="heroTab = 'finder'" class="w-full sm:w-auto px-6 py-3 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-semibold text-sm transition-colors flex items-center justify-center gap-2">
+                            Cariin Tempat
                         </a>
-                        <a href="{{ route('city.dashboard') }}" class="w-full sm:w-auto px-6 py-3.5 rounded-xl bg-slate-800/80 hover:bg-slate-800 text-slate-200 border border-slate-700/80 font-semibold text-sm sm:text-base transition-all flex items-center justify-center gap-2 min-h-[48px]">
-                            <span>Pantau Kondisi Kota</span>
+                        <a href="{{ route('city.dashboard') }}" class="w-full sm:w-auto px-6 py-3 rounded-lg bg-transparent hover:bg-slate-800 text-slate-300 border border-slate-700 font-medium text-sm transition-colors flex items-center justify-center">
+                            Cek Kondisi Kota
                         </a>
                     </div>
 
-                    <!-- Impact Counter Pill -->
-                    <div class="pt-4 border-t border-slate-800/80 grid grid-cols-3 gap-4 text-center lg:text-left max-w-lg mx-auto lg:mx-0 text-xs">
-                        <div>
-                            <div class="font-mono font-bold text-emerald-400 text-lg">{{ $locationCount }}</div>
-                            <div class="text-slate-400 text-[11px]">Lokasi Terdaftar</div>
-                        </div>
-                        <div>
-                            <div class="font-mono font-bold text-emerald-400 text-lg">{{ number_format($totalCo2Avoided, 1) }} kg</div>
-                            <div class="text-slate-400 text-[11px]">CO2 Hemat</div>
-                        </div>
-                        <div>
-                            <div class="font-mono font-bold text-emerald-400 text-lg">BMKG & AQI</div>
-                            <div class="text-slate-400 text-[11px]">Data Terverifikasi</div>
+                    <!-- Streak-style Impact Card (Gen Z gamification, Duolingo-esque) -->
+                    <div class="pt-2">
+                        <div class="inline-flex flex-wrap items-center gap-4 sm:gap-6 px-5 py-4 rounded-2xl bg-gradient-to-r from-slate-900 to-slate-900/60 border border-slate-800 mx-auto lg:mx-0">
+                            <div class="flex items-center gap-2">
+                                <svg class="w-6 h-6 text-emerald-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5"></path></svg>
+                                <div class="text-left">
+                                    <div class="font-display font-semibold text-white text-lg leading-none">{{ number_format($totalCo2Avoided, 1) }} kg</div>
+                                    <div class="text-slate-500 text-[11px] mt-0.5">CO2 dihemat bareng-bareng</div>
+                                </div>
+                            </div>
+                            <div class="w-px h-8 bg-slate-800 hidden sm:block"></div>
+                            <div class="text-left">
+                                <div class="font-display font-semibold text-white text-lg leading-none">{{ $locationCount }}</div>
+                                <div class="text-slate-500 text-[11px] mt-0.5">spot terdaftar</div>
+                            </div>
+                            <div class="w-px h-8 bg-slate-800 hidden sm:block"></div>
+                            <div class="text-left">
+                                <div class="font-display font-semibold text-emerald-400 text-lg leading-none">Live</div>
+                                <div class="text-slate-500 text-[11px] mt-0.5">data cuaca & AQI</div>
+                            </div>
                         </div>
                     </div>
 
                 </div>
 
-                <!-- Right Column: Interactive Hub Card with Dual Tabs -->
+                <!-- Right Column: Interactive Hub Card -->
                 <div class="lg:col-span-5" id="interactive-finder">
-                    <div class="bg-slate-900/90 border border-slate-800 rounded-3xl p-5 sm:p-7 shadow-2xl backdrop-blur-md space-y-5">
+                    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-2xl shadow-black/40 space-y-6">
                         
-                        <!-- Tab Navigation Switcher -->
-                        <div class="flex items-center bg-slate-950 p-1 rounded-xl border border-slate-800 text-xs font-semibold">
-                            <button type="button" @click="heroTab = 'finder'" :class="heroTab === 'finder' ? 'bg-emerald-600 text-white font-bold shadow-xs' : 'text-slate-400 hover:text-slate-200'" class="flex-1 py-2 rounded-lg transition-all text-center">
-                                🔍 Rekomendasi Tempat
+                        <!-- Tab Navigation -->
+                        <div class="flex items-center border-b border-slate-800 text-sm font-medium">
+                            <button type="button" @click="heroTab = 'finder'" :class="heroTab === 'finder' ? 'text-emerald-400 border-b-2 border-emerald-500' : 'text-slate-500 hover:text-slate-300'" class="flex-1 pb-3 transition-colors text-center">
+                                Cari Tempat
                             </button>
-                            <button type="button" @click="heroTab = 'status'" :class="heroTab === 'status' ? 'bg-emerald-600 text-white font-bold shadow-xs' : 'text-slate-400 hover:text-slate-200'" class="flex-1 py-2 rounded-lg transition-all text-center">
-                                📊 Sensor Live Kota
+                            <button type="button" @click="heroTab = 'status'" :class="heroTab === 'status' ? 'text-emerald-400 border-b-2 border-emerald-500' : 'text-slate-500 hover:text-slate-300'" class="flex-1 pb-3 transition-colors text-center">
+                                Sensor Live
                             </button>
                         </div>
 
                         <!-- TAB 1: QUESTIONNAIRE FINDER -->
                         <div x-show="heroTab === 'finder'" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100">
-                            <form method="POST" action="{{ route('recommend.process') }}" class="space-y-4">
+                            <form method="POST" action="{{ route('recommend.process') }}" class="space-y-5">
                                 @csrf
                                 <input type="hidden" name="preferred_crowd" :value="priority === 'crowd' ? 'low' : 'any'">
                                 <input type="hidden" name="transport_mode" :value="activity === 'cycling' ? 'bicycle' : (activity === 'commute' ? 'public_transport' : 'walking')">
 
                                 <!-- Q1: Aktivitas -->
                                 <div>
-                                    <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">1. Pilih Rencana Aktivitas:</label>
-                                    <div class="grid grid-cols-3 gap-2 text-xs">
+                                    <label class="block text-sm font-medium text-slate-300 mb-2.5">Lagi pengen ngapain?</label>
+                                    <div class="grid grid-cols-3 gap-2.5 text-xs">
                                         <label class="cursor-pointer">
                                             <input type="radio" name="activity_type" value="exercise" x-model="activity" class="sr-only">
-                                            <div class="p-2.5 rounded-xl border text-center transition-all min-h-[50px] flex flex-col items-center justify-center" :class="activity === 'exercise' ? 'border-emerald-500 bg-emerald-500/10 text-emerald-300 font-bold' : 'border-slate-800 bg-slate-950/60 text-slate-400 hover:bg-slate-800/50'">
-                                                <span class="text-base mb-0.5">🏃</span>
-                                                <span class="text-[11px]">Olahraga</span>
+                                            <div class="p-3 rounded-lg border text-center transition-all flex flex-col items-center justify-center gap-2" :class="activity === 'exercise' ? 'border-emerald-500 bg-emerald-400/10 text-emerald-300' : 'border-slate-800 bg-slate-950 text-slate-400 hover:border-slate-600'">
+                                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                                                <span>Olahraga</span>
                                             </div>
                                         </label>
                                         <label class="cursor-pointer">
                                             <input type="radio" name="activity_type" value="relax" x-model="activity" class="sr-only">
-                                            <div class="p-2.5 rounded-xl border text-center transition-all min-h-[50px] flex flex-col items-center justify-center" :class="activity === 'relax' ? 'border-emerald-500 bg-emerald-500/10 text-emerald-300 font-bold' : 'border-slate-800 bg-slate-950/60 text-slate-400 hover:bg-slate-800/50'">
-                                                <span class="text-base mb-0.5">🧘</span>
-                                                <span class="text-[11px]">Bersantai</span>
+                                            <div class="p-3 rounded-lg border text-center transition-all flex flex-col items-center justify-center gap-2" :class="activity === 'relax' ? 'border-emerald-500 bg-emerald-400/10 text-emerald-300' : 'border-slate-800 bg-slate-950 text-slate-400 hover:border-slate-600'">
+                                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"></path></svg>
+                                                <span>Bersantai</span>
                                             </div>
                                         </label>
                                         <label class="cursor-pointer">
                                             <input type="radio" name="activity_type" value="cycling" x-model="activity" class="sr-only">
-                                            <div class="p-2.5 rounded-xl border text-center transition-all min-h-[50px] flex flex-col items-center justify-center" :class="activity === 'cycling' ? 'border-emerald-500 bg-emerald-500/10 text-emerald-300 font-bold' : 'border-slate-800 bg-slate-950/60 text-slate-400 hover:bg-slate-800/50'">
-                                                <span class="text-base mb-0.5">🚲</span>
-                                                <span class="text-[11px]">Bersepeda</span>
+                                            <div class="p-3 rounded-lg border text-center transition-all flex flex-col items-center justify-center gap-2" :class="activity === 'cycling' ? 'border-emerald-500 bg-emerald-400/10 text-emerald-300' : 'border-slate-800 bg-slate-950 text-slate-400 hover:border-slate-600'">
+                                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                                                <span>Bersepeda</span>
+                                            </div>
+                                        </label>
+                                        <label class="cursor-pointer">
+                                            <input type="radio" name="activity_type" value="study" x-model="activity" class="sr-only">
+                                            <div class="p-3 rounded-lg border text-center transition-all flex flex-col items-center justify-center gap-2" :class="activity === 'study' ? 'border-emerald-500 bg-emerald-400/10 text-emerald-300' : 'border-slate-800 bg-slate-950 text-slate-400 hover:border-slate-600'">
+                                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25"></path></svg>
+                                                <span>Belajar</span>
+                                            </div>
+                                        </label>
+                                        <label class="cursor-pointer">
+                                            <input type="radio" name="activity_type" value="walk" x-model="activity" class="sr-only">
+                                            <div class="p-3 rounded-lg border text-center transition-all flex flex-col items-center justify-center gap-2" :class="activity === 'walk' ? 'border-emerald-500 bg-emerald-400/10 text-emerald-300' : 'border-slate-800 bg-slate-950 text-slate-400 hover:border-slate-600'">
+                                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 6.75V15m6-6v8.25m.503 3.498l4.875-2.437c.381-.19.622-.58.622-1.006V4.82c0-.836-.88-1.38-1.628-1.006l-3.869 1.934c-.317.159-.69.159-1.006 0L9.503 3.752a1.125 1.125 0 00-1.006 0L3.622 6.189C3.24 6.38 3 6.77 3 7.195v10.585c0 .836.88 1.38 1.628 1.006l3.869-1.934c.317-.159.69-.159 1.006 0l4.994 2.497c.317.158.69.158 1.006 0z"></path></svg>
+                                                <span>Jalan-jalan</span>
                                             </div>
                                         </label>
                                     </div>
                                 </div>
 
-                                <!-- Q2: Waktu Aktivitas -->
+                                <!-- Q2: Waktu -->
                                 <div>
-                                    <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">2. Waktu Kunjungan:</label>
-                                    <div class="grid grid-cols-2 gap-2 text-xs">
+                                    <label class="block text-sm font-medium text-slate-300 mb-2.5">Berangkat jam berapa?</label>
+                                    <div class="grid grid-cols-2 gap-2.5 text-xs">
                                         <label class="cursor-pointer">
                                             <input type="radio" name="preferred_time" value="morning" x-model="time" class="sr-only">
-                                            <div class="p-2 rounded-xl border text-center transition-all min-h-[40px] flex items-center justify-center gap-1.5" :class="time === 'morning' ? 'border-emerald-500 bg-emerald-500/10 text-emerald-300 font-bold' : 'border-slate-800 bg-slate-950/60 text-slate-400 hover:bg-slate-800/50'">
-                                                <span>🌅 Pagi (06-09)</span>
+                                            <div class="p-3 rounded-lg border text-center transition-all flex items-center justify-center gap-2" :class="time === 'morning' ? 'border-emerald-500 bg-emerald-400/10 text-emerald-300' : 'border-slate-800 bg-slate-950 text-slate-400 hover:border-slate-600'">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                                                <span>Pagi (06.00–09.00)</span>
                                             </div>
                                         </label>
                                         <label class="cursor-pointer">
                                             <input type="radio" name="preferred_time" value="afternoon" x-model="time" class="sr-only">
-                                            <div class="p-2 rounded-xl border text-center transition-all min-h-[40px] flex items-center justify-center gap-1.5" :class="time === 'afternoon' ? 'border-emerald-500 bg-emerald-500/10 text-emerald-300 font-bold' : 'border-slate-800 bg-slate-950/60 text-slate-400 hover:bg-slate-800/50'">
-                                                <span>🌤️ Sore (16-18)</span>
+                                            <div class="p-3 rounded-lg border text-center transition-all flex items-center justify-center gap-2" :class="time === 'afternoon' ? 'border-emerald-500 bg-emerald-400/10 text-emerald-300' : 'border-slate-800 bg-slate-950 text-slate-400 hover:border-slate-600'">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z"></path></svg>
+                                                <span>Sore (16.00–18.00)</span>
                                             </div>
                                         </label>
                                     </div>
                                 </div>
 
-                                <!-- Q3: Prioritas Utama -->
+                                <!-- Q3: Prioritas -->
                                 <div>
-                                    <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">3. Prioritas Utama:</label>
-                                    <div class="grid grid-cols-2 gap-2 text-xs">
+                                    <label class="block text-sm font-medium text-slate-300 mb-2.5">Yang paling penting buat kamu?</label>
+                                    <div class="grid grid-cols-2 gap-2.5 text-xs">
                                         <label class="cursor-pointer">
                                             <input type="radio" name="user_priority" value="air_quality" x-model="priority" class="sr-only">
-                                            <div class="p-2 rounded-xl border text-center transition-all min-h-[40px] flex items-center justify-center gap-1.5" :class="priority === 'air_quality' ? 'border-emerald-500 bg-emerald-500/10 text-emerald-300 font-bold' : 'border-slate-800 bg-slate-950/60 text-slate-400 hover:bg-slate-800/50'">
-                                                <span>🍃 Udara Bersih</span>
+                                            <div class="p-3 rounded-lg border text-center transition-all flex items-center justify-center gap-2" :class="priority === 'air_quality' ? 'border-emerald-500 bg-emerald-400/10 text-emerald-300' : 'border-slate-800 bg-slate-950 text-slate-400 hover:border-slate-600'">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5"></path></svg>
+                                                <span>Udara Bersih</span>
                                             </div>
                                         </label>
                                         <label class="cursor-pointer">
                                             <input type="radio" name="user_priority" value="crowd" x-model="priority" class="sr-only">
-                                            <div class="p-2 rounded-xl border text-center transition-all min-h-[40px] flex items-center justify-center gap-1.5" :class="priority === 'crowd' ? 'border-emerald-500 bg-emerald-500/10 text-emerald-300 font-bold' : 'border-slate-800 bg-slate-950/60 text-slate-400 hover:bg-slate-800/50'">
-                                                <span>🧘 Suasana Tenang</span>
+                                            <div class="p-3 rounded-lg border text-center transition-all flex items-center justify-center gap-2" :class="priority === 'crowd' ? 'border-emerald-500 bg-emerald-400/10 text-emerald-300' : 'border-slate-800 bg-slate-950 text-slate-400 hover:border-slate-600'">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+                                                <span>Suasana Tenang</span>
                                             </div>
                                         </label>
                                     </div>
                                 </div>
 
-                                <button type="submit" class="w-full py-3.5 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-bold text-sm transition-all shadow-md shadow-emerald-500/20 flex items-center justify-center gap-2 mt-2">
-                                    <span>Tampilkan Rekomendasi Tempat</span>
-                                    <svg class="w-4 h-4 text-slate-950" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                                <button type="submit" class="w-full py-3 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-semibold text-sm transition-colors mt-2">
+                                    Cariin Tempatnya
                                 </button>
                             </form>
                         </div>
 
-                        <!-- TAB 2: LIVE SENSOR STATUS CARD -->
-                        <div x-show="heroTab === 'status'" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" class="space-y-3 text-xs">
-                            <div class="p-3.5 rounded-xl bg-slate-950 border border-slate-800 space-y-1">
-                                <div class="flex justify-between items-center text-slate-400">
+                        <!-- TAB 2: LIVE SENSOR STATUS -->
+                        <div x-show="heroTab === 'status'" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" class="space-y-3">
+                            <div class="p-4 rounded-xl border border-slate-800 bg-slate-950/50">
+                                <div class="flex justify-between items-center text-slate-400 text-xs mb-2">
                                     <span>Kualitas Udara Real-Time</span>
-                                    <span class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 font-mono text-[10px]">BMKG / OPEN API</span>
+                                    <span class="text-emerald-400 font-mono">AQI API</span>
                                 </div>
-                                <div class="text-xl font-bold font-mono text-emerald-400">{{ $airQuality['air_quality_status'] ?? 'Baik' }}</div>
-                                <p class="text-slate-400 text-[11px]">Konsentrasi partikel PM2.5 tergolong aman untuk aktivitas olahraga luar ruang.</p>
+                                <div class="text-xl font-medium text-white">{{ $airQuality['air_quality_status'] ?? 'Baik' }}</div>
+                                <p class="text-slate-500 text-xs mt-1">PM2.5 aman buat olahraga di luar.</p>
                             </div>
-
-                            <div class="p-3.5 rounded-xl bg-slate-950 border border-slate-800 space-y-1">
-                                <div class="flex justify-between items-center text-slate-400">
+                            
+                            <div class="p-4 rounded-xl border border-slate-800 bg-slate-950/50">
+                                <div class="flex justify-between items-center text-slate-400 text-xs mb-2">
                                     <span>Cuaca & Suhu Kota</span>
-                                    <span class="px-2 py-0.5 rounded bg-amber-500/20 text-amber-400 font-mono text-[10px]">STASIUN BMKG</span>
+                                    <span class="text-amber-500 font-mono">BMKG</span>
                                 </div>
-                                <div class="text-xl font-bold text-white">{{ $weather['weather_description'] ?? 'Cerah' }}, {{ $weather['temperature'] ?? 27.5 }}°C</div>
-                                <p class="text-slate-400 text-[11px]">Peluang hujan {{ $weather['rain_probability'] ?? 20 }}%. Kondisi fisik taman sangat mendukung.</p>
+                                <div class="text-xl font-medium text-white">{{ $weather['weather_description'] ?? 'Cerah' }}, {{ $weather['temperature'] ?? 27.5 }}°C</div>
+                                <p class="text-slate-500 text-xs mt-1">Peluang hujan {{ $weather['rain_probability'] ?? 20 }}%, aman buat main ke luar.</p>
                             </div>
 
-                            <a href="{{ route('city.dashboard') }}" class="block w-full py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-center font-semibold text-slate-200 transition-colors text-xs">
-                                Buka Dashboard Sensor Kota Lengkap &rarr;
+                            <a href="{{ route('city.dashboard') }}" class="block w-full py-3 rounded-lg bg-slate-800 hover:bg-slate-700 text-center font-medium text-slate-300 transition-colors text-sm mt-4">
+                                Buka Dashboard Lengkap
                             </a>
                         </div>
 
@@ -212,113 +251,98 @@
                 </div>
 
             </div>
-
         </div>
     </section>
 
-    <!-- LIVE ENVIRONMENT STATUS SUMMARY -->
-    <section class="py-8 sm:py-12 bg-white border-b border-slate-200">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-6 mb-6 sm:mb-8">
+    <!-- LIVE ENVIRONMENT STATUS — bento layout -->
+    <section class="py-12 sm:py-16 bg-slate-50 border-b border-slate-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 reveal-on-scroll opacity-0 translate-y-8 transition-all duration-1000 ease-out">
+            <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8 sm:mb-12">
                 <div>
-                    <span class="text-xs font-bold text-emerald-700 uppercase tracking-wider block mb-1">RINGKASAN REAL-TIME</span>
-                    <h2 class="text-xl sm:text-2xl font-bold text-slate-900">Kondisi Lingkungan {{ $activeCity->name ?? 'Kota Anda' }} Saat Ini</h2>
+                    <h2 class="font-display text-2xl sm:text-3xl font-semibold tracking-tight text-slate-900">Gimana kondisi hari ini?</h2>
+                    <p class="text-slate-500 mt-2">{{ $activeCity->name ?? 'Kota Anda' }}, update tiap saat.</p>
                 </div>
-                <a href="{{ route('city.dashboard') }}" class="inline-flex items-center gap-1.5 text-sm sm:text-base font-bold text-emerald-700 hover:underline">
-                    <span>Lihat Selengkapnya</span> &rarr;
+                <a href="{{ route('city.dashboard') }}" class="text-sm font-medium text-emerald-600 hover:text-emerald-700 transition-colors">
+                    Lihat detail sensor kota
                 </a>
             </div>
 
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-                <!-- Kualitas Udara -->
-                <div class="p-5 sm:p-6 rounded-3xl bg-slate-50 border border-slate-200">
-                    <div class="flex items-center gap-3 mb-3">
-                        <div class="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold text-xl flex-shrink-0">🍃</div>
-                        <div>
-                            <div class="text-xs font-bold text-slate-500 uppercase">KUALITAS UDARA</div>
-                            <div class="text-lg sm:text-xl font-bold text-slate-900">{{ $airQuality['air_quality_status'] ?? 'Baik' }}</div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+                <!-- Kualitas Udara: kartu utama, lebih besar -->
+                <div class="sm:row-span-2 p-7 bg-white border border-slate-200 rounded-2xl flex flex-col justify-between">
+                    <div class="flex items-start justify-between">
+                        <div class="p-3 bg-emerald-50 rounded-xl text-emerald-600">
+                            <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5"></path></svg>
                         </div>
+                        <span class="text-[11px] font-medium text-slate-400">Live</span>
                     </div>
-                    <p class="text-xs sm:text-sm text-slate-600 leading-relaxed">
-                        Sangat baik dan aman untuk aktivitas fisik luar ruangan hari ini.
-                    </p>
-                    <div class="mt-4 pt-3 border-t border-slate-200 text-xs text-slate-500">
-                        Sumber Data: Air Quality Open Data
+                    <div class="mt-6">
+                        <div class="text-sm text-slate-500 mb-1">Kualitas Udara</div>
+                        <div class="font-display text-3xl font-semibold text-slate-900">{{ $airQuality['air_quality_status'] ?? 'Baik' }}</div>
+                        <p class="text-slate-500 text-sm mt-3 leading-relaxed">Aman buat olahraga atau nongkrong outdoor hari ini.</p>
                     </div>
                 </div>
 
-                <!-- Cuaca BMKG -->
-                <div class="p-5 sm:p-6 rounded-3xl bg-slate-50 border border-slate-200">
-                    <div class="flex items-center gap-3 mb-3">
-                        <div class="w-10 h-10 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center font-bold text-xl flex-shrink-0">🌤️</div>
-                        <div>
-                            <div class="text-xs font-bold text-slate-500 uppercase">CUACA {{ strtoupper($activeCity->name ?? 'KOTA') }}</div>
-                            <div class="text-lg sm:text-xl font-bold text-slate-900">{{ $weather['weather_description'] ?? 'Cerah' }}, {{ $weather['temperature'] ?? 27.5 }}°C</div>
-                        </div>
+                <!-- Cuaca -->
+                <div class="p-6 bg-white border border-slate-200 rounded-2xl flex items-center gap-4">
+                    <div class="p-2.5 bg-amber-50 rounded-lg text-amber-500 shrink-0">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z"></path></svg>
                     </div>
-                    <p class="text-xs sm:text-sm text-slate-600 leading-relaxed">
-                        Peluang hujan relatif rendah ({{ $weather['rain_probability'] ?? 20 }}%), mendukung olahraga outdoor.
-                    </p>
-                    <div class="mt-4 pt-3 border-t border-slate-200 text-xs text-slate-500">
-                        Sumber Data: Stasiun BMKG / Open Data
+                    <div>
+                        <div class="text-xs font-medium text-slate-500 mb-1">Cuaca</div>
+                        <div class="text-lg font-semibold text-slate-900">{{ $weather['weather_description'] ?? 'Cerah' }}, {{ $weather['temperature'] ?? 27.5 }}°C</div>
                     </div>
                 </div>
 
-                <!-- Tingkat Keramaian -->
-                <div class="p-5 sm:p-6 rounded-3xl bg-slate-50 border border-slate-200 sm:col-span-2 lg:col-span-1">
-                    <div class="flex items-center gap-3 mb-3">
-                        <div class="w-10 h-10 rounded-xl bg-blue-100 text-blue-700 flex items-center justify-center font-bold text-xl flex-shrink-0">👥</div>
-                        <div>
-                            <div class="text-xs font-bold text-slate-500 uppercase">TINGKAT KERAMAIAN</div>
-                            <div class="text-lg sm:text-xl font-bold text-slate-900">Sedang (Nyaman)</div>
-                        </div>
+                <!-- Keramaian -->
+                <div class="p-6 bg-white border border-slate-200 rounded-2xl flex items-center gap-4">
+                    <div class="p-2.5 bg-blue-50 rounded-lg text-blue-500 shrink-0">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
                     </div>
-                    <p class="text-xs sm:text-sm text-slate-600 leading-relaxed">
-                        Kepadatan pengunjung di tempat publik tergolong normal dan nyaman.
-                    </p>
-                    <div class="mt-4 pt-3 border-t border-slate-200 text-xs text-slate-500">
-                        Estimasi Model UrbanPulse
+                    <div>
+                        <div class="text-xs font-medium text-slate-500 mb-1">Keramaian</div>
+                        <div class="text-lg font-semibold text-slate-900">Sedang (Nyaman)</div>
                     </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- POPULAR LOCATIONS PREVIEW -->
-    <section class="py-10 sm:py-16 bg-slate-50 border-b border-slate-200">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 mb-6 sm:mb-10">
+    <!-- POPULAR LOCATIONS -->
+    <section class="py-16 sm:py-24 bg-white border-b border-slate-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 reveal-on-scroll opacity-0 translate-y-8 transition-all duration-1000 ease-out">
+            <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-10 sm:mb-12">
                 <div>
-                    <span class="text-xs font-bold text-emerald-700 uppercase tracking-wider block mb-1">LOKASI PILIHAN</span>
-                    <h2 class="text-2xl sm:text-3xl font-bold text-slate-900">Taman & Ruang Terbuka Hijau {{ $activeCity->name ?? 'Kota' }}</h2>
+                    <h2 class="font-display text-2xl sm:text-3xl font-semibold tracking-tight text-slate-900">Spot yang lagi rame dicari</h2>
+                    <p class="text-slate-500 mt-2">Taman dan ruang terbuka hijau di {{ $activeCity->name ?? 'kota ini' }}.</p>
                 </div>
-                <a href="{{ route('map') }}" class="px-4 sm:px-5 py-2.5 sm:py-3 rounded-xl bg-white border border-slate-300 hover:border-emerald-600 text-slate-800 hover:text-emerald-700 font-bold text-sm sm:text-base transition-all shadow-xs flex items-center gap-2 self-start sm:self-auto min-h-[44px]">
-                    <span>Lihat di Peta Interaktif</span> &rarr;
+                <a href="{{ route('map') }}" class="text-sm font-medium text-slate-600 hover:text-emerald-600 transition-colors">
+                    Lihat semua di peta interaktif
                 </a>
             </div>
 
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
                 @forelse($featuredLocations as $loc)
-                    <div class="bg-white rounded-3xl border border-slate-200 p-5 sm:p-6 shadow-sm hover:shadow-md transition-shadow space-y-4 flex flex-col justify-between">
-                        <div class="space-y-2">
-                            <div class="flex justify-between items-start gap-2">
-                                <h3 class="text-lg sm:text-xl font-bold text-slate-900 leading-tight">{{ $loc->name }}</h3>
-                                <span class="px-2 py-0.5 rounded bg-emerald-50 text-emerald-800 text-[11px] font-bold uppercase flex-shrink-0">{{ $loc->category }}</span>
-                            </div>
-                            <p class="text-slate-600 text-xs sm:text-sm leading-relaxed line-clamp-2">{{ $loc->description }}</p>
+                    <div class="group relative border border-slate-200 rounded-2xl p-6 hover:border-emerald-300 hover:shadow-xl hover:shadow-emerald-100 transition-all duration-300 hover:-rotate-1 hover:-translate-y-1 flex flex-col justify-between bg-white">
+                        <span class="absolute -top-2.5 -right-2.5 px-2.5 py-1 bg-emerald-500 text-white text-[10px] font-bold rounded-full rotate-6 shadow-sm">
+                            {{ Str::headline($loc->category) }}
+                        </span>
+                        <div class="space-y-4">
+                            <h3 class="font-display text-lg font-semibold text-slate-900 group-hover:text-emerald-600 transition-colors leading-snug pr-8">{{ $loc->name }}</h3>
+                            <p class="text-slate-500 text-sm leading-relaxed line-clamp-2">{{ $loc->description }}</p>
                         </div>
-
-                        <div class="pt-4 border-t border-slate-100 flex items-center justify-between text-xs sm:text-sm">
-                            <div class="font-medium text-slate-700">
-                                <span class="text-emerald-700 font-bold">★ {{ $loc->green_score }}%</span> Ruang Hijau
+                        
+                        <div class="mt-8 pt-4 border-t border-slate-100 flex items-center justify-between text-sm">
+                            <div class="text-slate-600">
+                                Ruang Hijau: <span class="font-semibold text-slate-900">{{ $loc->green_score }}%</span>
                             </div>
-                            <a href="{{ route('locations.show', $loc->slug) }}" class="font-bold text-emerald-700 hover:underline min-h-[38px] flex items-center">
-                                Detail Tempat &rarr;
+                            <a href="{{ route('locations.show', $loc->slug) }}" class="font-medium text-emerald-600 group-hover:text-emerald-700 transition-colors">
+                                Lihat Detail
                             </a>
                         </div>
                     </div>
                 @empty
-                    <div class="col-span-full text-center py-8 text-slate-500">
+                    <div class="col-span-full py-12 text-center text-slate-500 border border-dashed border-slate-200 rounded-xl">
                         Belum ada lokasi fisik terdaftar untuk {{ $activeCity->name ?? 'kota ini' }}.
                     </div>
                 @endforelse
@@ -327,50 +351,77 @@
     </section>
 
     <!-- SDG & IMPACT EXPLANATION -->
-    <section class="py-10 sm:py-16 bg-white border-b border-slate-200">
-        <div class="max-w-5xl mx-auto px-4 text-center space-y-6 sm:space-y-8">
-            <span class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-100 text-emerald-800 text-xs sm:text-sm font-semibold">
-                Dampak Berkelanjutan
-            </span>
-            <h2 class="text-2xl sm:text-4xl font-bold text-slate-900 leading-tight">
-                Bersama Mendorong Kota yang Lebih Sehat & Hijau
-            </h2>
-            <p class="text-slate-600 text-base sm:text-lg leading-relaxed max-w-3xl mx-auto">
-                Setiap langkah jalan kaki, kayuhan sepeda, atau penggunaan transportasi umum yang Anda catat di UrbanPulse langsung menghitung emisi CO2 yang berhasil Anda hindari.
-            </p>
+    <section class="py-16 sm:py-24 bg-slate-50 border-b border-slate-200">
+        <div class="max-w-5xl mx-auto px-4 reveal-on-scroll opacity-0 translate-y-8 transition-all duration-1000 ease-out">
+            <div class="mb-12 text-center max-w-2xl mx-auto">
+                <h2 class="font-display text-3xl font-semibold tracking-tight text-slate-900 mb-4">
+                    Kontribusi kecil, dampaknya kerasa
+                </h2>
+                <p class="text-slate-500 text-lg leading-relaxed">
+                    Tiap kali kamu jalan kaki, gowes, atau naik transportasi umum yang dicatat di sini, itu langsung ngurangin emisi CO2 kota.
+                </p>
+            </div>
 
-            <div class="grid sm:grid-cols-2 gap-4 sm:gap-6 text-left max-w-3xl mx-auto">
-                <div class="p-5 sm:p-6 rounded-3xl bg-slate-50 border border-slate-200 space-y-2">
-                    <div class="text-2xl mb-1">🏢</div>
-                    <h3 class="font-bold text-slate-900 text-base sm:text-lg">SDG 11: Kota Berkelanjutan</h3>
-                    <p class="text-xs sm:text-sm text-slate-600 leading-relaxed">Mendukung akses publik ke ruang hijau yang sehat dan infrastruktur pejalan kaki di wilayah perkotaan.</p>
+            <div class="grid sm:grid-cols-2 gap-8 text-left max-w-4xl mx-auto">
+                <div class="border border-slate-200 bg-white p-8 rounded-2xl flex gap-6">
+                    <span class="font-display text-5xl font-light text-slate-300 select-none">11</span>
+                    <div>
+                        <h3 class="font-medium text-slate-900 text-lg mb-2">Kota Berkelanjutan</h3>
+                        <p class="text-sm text-slate-500 leading-relaxed">Mendukung akses publik ke ruang hijau yang sehat dan infrastruktur pejalan kaki di wilayah perkotaan.</p>
+                    </div>
                 </div>
 
-                <div class="p-5 sm:p-6 rounded-3xl bg-slate-50 border border-slate-200 space-y-2">
-                    <div class="text-2xl mb-1">🌍</div>
-                    <h3 class="font-bold text-slate-900 text-base sm:text-lg">SDG 13: Penanganan Perubahan Iklim</h3>
-                    <p class="text-xs sm:text-sm text-slate-600 leading-relaxed">Melacak perkiraan CO2 yang dihindari secara nyata dari pilihan transportasi sehari-hari.</p>
+                <div class="border border-slate-200 bg-white p-8 rounded-2xl flex gap-6">
+                    <span class="font-display text-5xl font-light text-slate-300 select-none">13</span>
+                    <div>
+                        <h3 class="font-medium text-slate-900 text-lg mb-2">Penanganan Perubahan Iklim</h3>
+                        <p class="text-sm text-slate-500 leading-relaxed">Melacak perkiraan CO2 yang dihindari secara nyata dari pilihan mobilitas harian Anda.</p>
+                    </div>
                 </div>
             </div>
         </div>
     </section>
 
     <!-- FINAL CALL TO ACTION -->
-    <section class="py-10 sm:py-16 bg-emerald-700 text-white">
-        <div class="max-w-4xl mx-auto px-4 text-center space-y-4 sm:space-y-6">
-            <h2 class="text-2xl sm:text-4xl font-bold">Mulai Buat Keputusan Berkelanjutan Hari Ini</h2>
-            <p class="text-emerald-100 text-base sm:text-lg max-w-2xl mx-auto">
-                Eksplorasi tempat terbaik di {{ $activeCity->name ?? 'kota Anda' }} dan catat kontribusi hijau Anda.
+    <section class="py-20 bg-slate-950 text-white relative border-t-4 border-emerald-500">
+        <div class="absolute inset-0 opacity-5 bg-[linear-gradient(to_right,#ffffff12_1px,transparent_1px),linear-gradient(to_bottom,#ffffff12_1px,transparent_1px)] bg-[size:24px_24px]"></div>
+        <div class="max-w-3xl mx-auto px-4 text-center relative z-10">
+            <h2 class="font-display text-3xl sm:text-4xl font-semibold tracking-tight mb-6">Yuk, mulai dari yang deket-deket dulu</h2>
+            <p class="text-slate-400 text-lg mb-10">
+                Cari tempat terbaik di {{ $activeCity->name ?? 'kota kamu' }} dan catat kontribusi hijaumu.
             </p>
-            <div class="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 pt-2 sm:pt-4">
-                <a href="{{ route('recommend.index') }}" class="w-full sm:w-auto px-6 sm:px-8 py-3.5 sm:py-4 rounded-2xl bg-white text-emerald-800 hover:bg-emerald-50 font-bold text-base sm:text-lg shadow-lg transition-all min-h-[48px] sm:min-h-[52px] flex items-center justify-center">
+            <div class="flex flex-col sm:flex-row justify-center gap-4">
+                <a href="{{ route('recommend.index') }}" class="px-8 py-3.5 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-semibold transition-colors">
                     Cari Rekomendasi Tempat
                 </a>
-                <a href="{{ route('city.dashboard') }}" class="w-full sm:w-auto px-6 sm:px-8 py-3.5 sm:py-4 rounded-2xl bg-emerald-800 hover:bg-emerald-900 text-white font-bold text-base sm:text-lg transition-all min-h-[48px] sm:min-h-[52px] flex items-center justify-center border border-emerald-600">
+                <a href="{{ route('city.dashboard') }}" class="px-8 py-3.5 rounded-lg border border-slate-700 hover:bg-slate-800 text-white font-medium transition-colors">
                     Jelajahi {{ $activeCity->name ?? 'Kota' }}
                 </a>
             </div>
         </div>
     </section>
 
+    <!-- Script Intersection Observer -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const observerOptions = {
+                root: null,
+                rootMargin: '0px',
+                threshold: 0.15
+            };
+
+            const observer = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.remove('opacity-0', 'translate-y-8');
+                        entry.target.classList.add('opacity-100', 'translate-y-0');
+                        observer.unobserve(entry.target); 
+                    }
+                });
+            }, observerOptions);
+
+            const revealElements = document.querySelectorAll('.reveal-on-scroll');
+            revealElements.forEach(el => observer.observe(el));
+        });
+    </script>
 </x-layouts.app>
